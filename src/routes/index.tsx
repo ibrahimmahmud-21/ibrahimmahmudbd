@@ -399,11 +399,11 @@ function Index() {
           <div className="hero-card">
             <div className="hero-tag">
               <span className="pulse-dot"></span>
-              Future Software Engineer
+              Exploring Cyber Security
             </div>
             <h1 className="hero-name">Ibrahim Mahmud</h1>
             <p className="hero-subtitle">Learning. Building. Growing.</p>
-            <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Future Software Engineer</p>
+            <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Exploring Cyber Security</p>
             <div className="hero-btns">
               <button className="btn-primary" onClick={() => scrollTo("projects")}>
                 View Projects
