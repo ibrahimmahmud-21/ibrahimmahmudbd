@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
-import { Mail, Facebook, Send } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Mail, Facebook, Send, GraduationCap, Shield, Cpu, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -174,6 +174,22 @@ const css = `
     50% { transform: translateY(-16px); }
   }
 
+  /* WAVING ARM */
+  .portfolio .wave-arm {
+    transform-origin: 97px 50px;
+    transform: rotate(0deg);
+    animation: portfolio-wave 1.6s ease-in-out 0.4s 2;
+  }
+  @keyframes portfolio-wave {
+    0%   { transform: rotate(0deg); }
+    15%  { transform: rotate(-90deg); }
+    30%  { transform: rotate(-70deg); }
+    45%  { transform: rotate(-95deg); }
+    60%  { transform: rotate(-70deg); }
+    75%  { transform: rotate(-90deg); }
+    100% { transform: rotate(0deg); }
+  }
+
   /* SECTIONS */
   .portfolio .content-wrap { max-width: 840px; margin: 0 auto; padding: 0 24px; }
   .portfolio .section { padding: 88px 0 0; }
@@ -190,28 +206,37 @@ const css = `
   }
   .portfolio .section-sub { font-size: 13.5px; color: #666; line-height: 1.75; max-width: 460px; }
 
-  /* ABOUT */
-  .portfolio .about-card {
+  /* ABOUT — card grid */
+  .portfolio .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px; margin-top: 26px;
+  }
+  .portfolio .about-card-item {
     background: var(--card);
-    border-radius: 20px; padding: 38px 42px;
-    margin-top: 26px; border: 1px solid var(--border);
-    display: grid; grid-template-columns: 1.3fr 1fr;
-    gap: 34px; align-items: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+    border-radius: 16px; padding: 24px 22px;
+    border: 1px solid var(--border);
+    transition: all .25s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; gap: 10px;
   }
-  .portfolio .about-text { font-size: 13.5px; color: #bbb; line-height: 1.9; }
-  .portfolio .about-text p { margin-bottom: 13px; }
-  .portfolio .about-text p:last-child { margin-bottom: 0; }
-  .portfolio .about-stats { display: grid; gap: 13px; }
-  .portfolio .stat-item {
-    background: rgba(57,255,20,0.06);
-    border: 1px solid rgba(57,255,20,0.14);
-    border-radius: 12px; padding: 16px 19px;
-    transition: border-color .2s;
+  .portfolio .about-card-item:hover {
+    border-color: rgba(57,255,20,0.38);
+    transform: translateY(-4px);
+    background: var(--card2);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.16);
   }
-  .portfolio .stat-item:hover { border-color: rgba(57,255,20,0.3); }
-  .portfolio .stat-num { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1; }
-  .portfolio .stat-label { font-size: 11.5px; color: #666; margin-top: 4px; }
+  .portfolio .about-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    background: rgba(57,255,20,0.1);
+    border: 1px solid rgba(57,255,20,0.22);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+  }
+  .portfolio .about-card-title {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.2px;
+  }
 
   /* SKILLS */
   .portfolio .skills-grid {
@@ -223,7 +248,8 @@ const css = `
     background: var(--card);
     border-radius: 14px; padding: 22px 19px;
     border: 1px solid var(--border);
-    transition: all .25s; cursor: default;
+    transition: transform .25s, border-color .25s, background .25s, box-shadow .25s;
+    cursor: default;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   }
   .portfolio .skill-card:hover {
@@ -252,7 +278,8 @@ const css = `
     border: 1px solid var(--border);
     min-height: 205px;
     display: flex; flex-direction: column; justify-content: space-between;
-    transition: all .25s; position: relative; overflow: hidden;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+    position: relative; overflow: hidden;
     box-shadow: 0 8px 28px rgba(0,0,0,0.1);
   }
   .portfolio .project-card::after {
@@ -297,12 +324,13 @@ const css = `
   .portfolio .contact-value { font-size: 14px; color: var(--text); font-weight: 500; word-break: break-all; }
   .portfolio .contact-arrow { font-size: 17px; color: var(--accent); margin-top: 12px; display: block; }
   .portfolio .contact-icon {
-    width: 38px; height: 38px; border-radius: 10px;
-    background: rgba(57,255,20,0.1);
-    border: 1px solid rgba(57,255,20,0.22);
+    width: 42px; height: 42px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--accent); margin-bottom: 14px;
+    color: #fff; margin-bottom: 14px;
   }
+  .portfolio .contact-icon-email    { background: linear-gradient(135deg, #ea4335, #c5221f); }
+  .portfolio .contact-icon-facebook { background: linear-gradient(135deg, #1877f2, #0a4fb3); }
+  .portfolio .contact-icon-telegram { background: linear-gradient(135deg, #2aabee, #229ed9); }
 
   /* CONTACT FORM */
   .portfolio .contact-form {
@@ -341,8 +369,29 @@ const css = `
     justify-self: start; margin-top: 4px;
   }
   .portfolio .form-submit:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.25); }
+  .portfolio .form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .portfolio .form-status { font-size: 12.5px; color: var(--accent); margin-top: 4px; }
   .portfolio .form-error { font-size: 12px; color: #ff6b6b; }
+
+  /* SCROLL REVEAL */
+  .portfolio .reveal {
+    opacity: 0;
+    transform: translateX(0) translateY(24px);
+    transition: opacity .7s ease-out, transform .7s ease-out;
+    will-change: opacity, transform;
+  }
+  .portfolio .reveal-left  { transform: translateX(-40px); }
+  .portfolio .reveal-right { transform: translateX(40px); }
+  .portfolio .reveal.is-visible {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio .reveal, .portfolio .reveal-left, .portfolio .reveal-right {
+      opacity: 1; transform: none; transition: none;
+    }
+    .portfolio .silhouette-wrap, .portfolio .wave-arm { animation: none; }
+  }
 
   /* FOOTER */
   .portfolio footer {
@@ -356,7 +405,6 @@ const css = `
     .portfolio .hero-inner { flex-direction: column; }
     .portfolio .silhouette-wrap { width: 90px; margin: 0 0 -14px; order: -1; align-self: center; }
     .portfolio .hero-card { padding: 36px 28px; }
-    .portfolio .about-card { grid-template-columns: 1fr; padding: 28px 24px; }
     .portfolio .projects-grid { grid-template-columns: 1fr; }
     .portfolio .contact-card { padding: 26px 20px; }
     .portfolio .contact-form { padding: 24px 20px; }
@@ -368,6 +416,29 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>(".portfolio .reveal");
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
 function Index() {
   useEffect(() => {
     const prev = document.body.style.background;
@@ -376,6 +447,23 @@ function Index() {
       document.body.style.background = prev;
     };
   }, []);
+
+  useScrollReveal();
+
+  const aboutCards = [
+    { icon: <GraduationCap size={20} />, title: "Class 10 Student", side: "left" },
+    { icon: <Shield size={20} />, title: "Interested in Cyber Security", side: "right" },
+    { icon: <Cpu size={20} />, title: "Passionate about Technology", side: "left" },
+    { icon: <Zap size={20} />, title: "Fast Learner", side: "right" },
+  ] as const;
+
+  const skills = [
+    { icon: "🟧", name: "HTML", badge: "Basic", badgeClass: "badge-learning", side: "left" },
+    { icon: "📱", name: "Mobile Optimization", badge: "Good", badgeClass: "badge-done", side: "right" },
+    { icon: "🧩", name: "Problem Solving", badge: "Developing", badgeClass: "badge-learning", side: "left" },
+    { icon: "🤖", name: "AI Productivity", badge: "Experienced", badgeClass: "badge-done", side: "right" },
+    { icon: "🛡️", name: "Cyber Security", badge: "Beginner", badgeClass: "badge-learning", side: "left" },
+  ] as const;
 
   return (
     <div className="portfolio">
@@ -426,8 +514,13 @@ function Index() {
               <circle cx="57" cy="22" r="17" fill="#18181b" stroke="#39ff14" strokeWidth="1.5" />
               <rect x="50" y="37" width="14" height="10" rx="4" fill="#18181b" />
               <rect x="30" y="45" width="55" height="65" rx="11" fill="#18181b" />
+              {/* Left arm (static) */}
               <rect x="7" y="47" width="22" height="55" rx="9" fill="#18181b" />
-              <rect x="86" y="47" width="22" height="55" rx="9" fill="#18181b" />
+              {/* Right arm — waves on load */}
+              <g className="wave-arm">
+                <rect x="86" y="47" width="22" height="55" rx="9" fill="#18181b" />
+                <circle cx="97" cy="105" r="6" fill="#18181b" stroke="#39ff14" strokeWidth="1" />
+              </g>
               <rect x="31" y="107" width="20" height="72" rx="9" fill="#18181b" />
               <rect x="64" y="107" width="20" height="72" rx="9" fill="#18181b" />
               <ellipse cx="41" cy="179" rx="12" ry="6" fill="#18181b" />
@@ -444,36 +537,17 @@ function Index() {
         <section id="about" className="section">
           <div className="section-label">Who I am</div>
           <h2 className="section-title">About Me</h2>
-          <div className="about-card">
-            <div className="about-text">
-              <p>
-                Hey! I'm Ibrahim Mahmud — a Class 10 student with one big dream: becoming a
-                software engineer. I spend my free time learning web development and building
-                things from scratch.
-              </p>
-              <p>
-                I believe in the grind. Every line of code is a step forward. Currently mastering
-                HTML, CSS, and JavaScript before diving deeper into the world of software.
-              </p>
-              <p>
-                One day I'll build things that actually matter. Until then? I keep learning, keep
-                building, keep growing.
-              </p>
-            </div>
-            <div className="about-stats">
-              <div className="stat-item">
-                <div className="stat-num">10</div>
-                <div className="stat-label">Grade in School</div>
+          <p className="section-sub">A few honest things about me.</p>
+          <div className="about-grid">
+            {aboutCards.map((c) => (
+              <div
+                key={c.title}
+                className={`about-card-item reveal reveal-${c.side}`}
+              >
+                <div className="about-icon">{c.icon}</div>
+                <div className="about-card-title">{c.title}</div>
               </div>
-              <div className="stat-item">
-                <div className="stat-num">6+</div>
-                <div className="stat-label">Skills in Progress</div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-num">∞</div>
-                <div className="stat-label">Curiosity Level</div>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
@@ -483,31 +557,13 @@ function Index() {
           <h2 className="section-title">Skills</h2>
           <p className="section-sub">Building my toolkit one skill at a time.</p>
           <div className="skills-grid">
-            <div className="skill-card">
-              <div className="skill-icon">🟧</div>
-              <div className="skill-name">HTML</div>
-              <span className="badge badge-learning">Basic</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">📱</div>
-              <div className="skill-name">Mobile Optimization</div>
-              <span className="badge badge-done">Good</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">🧩</div>
-              <div className="skill-name">Problem Solving</div>
-              <span className="badge badge-learning">Developing</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">🛠️</div>
-              <div className="skill-name">Online Tools &amp; Tech</div>
-              <span className="badge badge-done">Experienced</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">🛡️</div>
-              <div className="skill-name">Cyber Security</div>
-              <span className="badge badge-learning">Beginner</span>
-            </div>
+            {skills.map((s) => (
+              <div key={s.name} className={`skill-card reveal reveal-${s.side}`}>
+                <div className="skill-icon">{s.icon}</div>
+                <div className="skill-name">{s.name}</div>
+                <span className={`badge ${s.badgeClass}`}>{s.badge}</span>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -517,24 +573,18 @@ function Index() {
           <h2 className="section-title">Projects</h2>
           <p className="section-sub">Big things are being cooked. Stay tuned.</p>
           <div className="projects-grid">
-            <div className="project-card">
+            <div className="project-card reveal reveal-left">
               <div className="project-soon">⏳ Coming Soon</div>
               <div>
                 <div className="project-title">Project One</div>
-                <div className="project-desc">
-                  Something exciting is brewing. This project will showcase my HTML &amp; CSS
-                  skills in a real-world context.
-                </div>
+                <div className="project-desc">A new project is on the way. Stay tuned.</div>
               </div>
             </div>
-            <div className="project-card">
+            <div className="project-card reveal reveal-right">
               <div className="project-soon">⏳ Coming Soon</div>
               <div>
                 <div className="project-title">Project Two</div>
-                <div className="project-desc">
-                  A JavaScript project in progress. Building interactive experiences one function
-                  at a time.
-                </div>
+                <div className="project-desc">Another project in progress. Coming soon.</div>
               </div>
             </div>
           </div>
@@ -547,7 +597,7 @@ function Index() {
           <p className="section-sub">Got a question or want to collaborate? Hit me up.</p>
           <div className="contact-card">
             <a className="contact-item" href="mailto:ibmm923@gmail.com">
-              <div className="contact-icon"><Mail size={18} /></div>
+              <div className="contact-icon contact-icon-email"><Mail size={20} /></div>
               <div className="contact-label">Email</div>
               <div className="contact-value">ibmm923@gmail.com</div>
               <span className="contact-arrow">↗</span>
@@ -558,7 +608,7 @@ function Index() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div className="contact-icon"><Facebook size={18} /></div>
+              <div className="contact-icon contact-icon-facebook"><Facebook size={20} /></div>
               <div className="contact-label">Facebook</div>
               <div className="contact-value">Ibrahim Mahmud</div>
               <span className="contact-arrow">↗</span>
@@ -569,7 +619,7 @@ function Index() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div className="contact-icon"><Send size={18} /></div>
+              <div className="contact-icon contact-icon-telegram"><Send size={20} /></div>
               <div className="contact-label">Telegram</div>
               <div className="contact-value">@ibrahimbd10</div>
               <span className="contact-arrow">↗</span>
@@ -590,8 +640,10 @@ function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
@@ -610,22 +662,41 @@ function ContactForm() {
       return;
     }
 
-    const subject = encodeURIComponent(`Portfolio message from ${trimmedName}`);
-    const body = encodeURIComponent(`${trimmedMessage}\n\n— ${trimmedName} (${trimmedEmail})`);
-    window.location.href = `mailto:ibmm923@gmail.com?subject=${subject}&body=${body}`;
-
-    setStatus({ type: "ok", msg: "Opening your email app…" });
-    setName("");
-    setEmail("");
-    setMessage("");
+    setSubmitting(true);
+    setStatus(null);
+    try {
+      const res = await fetch("https://formspree.io/f/xwvwvklr", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail,
+          message: trimmedMessage,
+        }),
+      });
+      if (res.ok) {
+        setStatus({ type: "ok", msg: "Thanks! Your message has been sent." });
+        setName("");
+        setEmail("");
+        setMessage("");
+        formRef.current?.reset();
+      } else {
+        setStatus({ type: "err", msg: "Something went wrong. Please try again." });
+      }
+    } catch {
+      setStatus({ type: "err", msg: "Network error. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <form className="contact-form" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate>
       <div className="form-field">
         <label className="form-label" htmlFor="cf-name">Name</label>
         <input
           id="cf-name"
+          name="name"
           className="form-input"
           type="text"
           value={name}
@@ -638,6 +709,7 @@ function ContactForm() {
         <label className="form-label" htmlFor="cf-email">Email</label>
         <input
           id="cf-email"
+          name="email"
           className="form-input"
           type="email"
           value={email}
@@ -650,6 +722,7 @@ function ContactForm() {
         <label className="form-label" htmlFor="cf-message">Message</label>
         <textarea
           id="cf-message"
+          name="message"
           className="form-textarea"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -657,7 +730,9 @@ function ContactForm() {
           required
         />
       </div>
-      <button type="submit" className="form-submit">Send Message</button>
+      <button type="submit" className="form-submit" disabled={submitting}>
+        {submitting ? "Sending…" : "Send Message"}
+      </button>
       {status && (
         <div className={status.type === "ok" ? "form-status" : "form-error"}>{status.msg}</div>
       )}
