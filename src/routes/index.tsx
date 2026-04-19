@@ -486,32 +486,27 @@ function Index() {
             <div className="skill-card">
               <div className="skill-icon">🟧</div>
               <div className="skill-name">HTML</div>
-              <span className="badge badge-done">Comfortable</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">🎨</div>
-              <div className="skill-name">CSS</div>
-              <span className="badge badge-done">Comfortable</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">⚡</div>
-              <div className="skill-name">JavaScript</div>
-              <span className="badge badge-learning">Learning</span>
+              <span className="badge badge-learning">Basic</span>
             </div>
             <div className="skill-card">
               <div className="skill-icon">📱</div>
-              <div className="skill-name">Responsive Design</div>
-              <span className="badge badge-done">Comfortable</span>
+              <div className="skill-name">Mobile Optimization</div>
+              <span className="badge badge-done">Good</span>
             </div>
             <div className="skill-card">
               <div className="skill-icon">🧩</div>
               <div className="skill-name">Problem Solving</div>
-              <span className="badge badge-done">Developing</span>
+              <span className="badge badge-learning">Developing</span>
             </div>
             <div className="skill-card">
-              <div className="skill-icon">⚙️</div>
-              <div className="skill-name">Mobile Optimization</div>
-              <span className="badge badge-learning">Exploring</span>
+              <div className="skill-icon">🛠️</div>
+              <div className="skill-name">Online Tools &amp; Tech</div>
+              <span className="badge badge-done">Experienced</span>
+            </div>
+            <div className="skill-card">
+              <div className="skill-icon">🛡️</div>
+              <div className="skill-name">Cyber Security</div>
+              <span className="badge badge-learning">Beginner</span>
             </div>
           </div>
         </section>
