@@ -584,3 +584,83 @@ function Index() {
     </div>
   );
 }
+
+function ContactForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedName || trimmedName.length > 100) {
+      setStatus({ type: "err", msg: "Please enter a valid name (max 100 chars)." });
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail) || trimmedEmail.length > 255) {
+      setStatus({ type: "err", msg: "Please enter a valid email address." });
+      return;
+    }
+    if (!trimmedMessage || trimmedMessage.length > 1000) {
+      setStatus({ type: "err", msg: "Message cannot be empty (max 1000 chars)." });
+      return;
+    }
+
+    const subject = encodeURIComponent(`Portfolio message from ${trimmedName}`);
+    const body = encodeURIComponent(`${trimmedMessage}\n\n— ${trimmedName} (${trimmedEmail})`);
+    window.location.href = `mailto:ibmm923@gmail.com?subject=${subject}&body=${body}`;
+
+    setStatus({ type: "ok", msg: "Opening your email app…" });
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  return (
+    <form className="contact-form" onSubmit={handleSubmit} noValidate>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-name">Name</label>
+        <input
+          id="cf-name"
+          className="form-input"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={100}
+          required
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-email">Email</label>
+        <input
+          id="cf-email"
+          className="form-input"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          maxLength={255}
+          required
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-message">Message</label>
+        <textarea
+          id="cf-message"
+          className="form-textarea"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={1000}
+          required
+        />
+      </div>
+      <button type="submit" className="form-submit">Send Message</button>
+      {status && (
+        <div className={status.type === "ok" ? "form-status" : "form-error"}>{status.msg}</div>
+      )}
+    </form>
+  );
+}
