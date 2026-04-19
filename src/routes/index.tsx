@@ -9,12 +9,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Ibrahim Mahmud — Class 10 student and future software engineer. Learning, building, and growing every day.",
+          "Ibrahim Mahmud — Class 10 student exploring Cyber Security. Learning, building, and growing every day.",
       },
       { property: "og:title", content: "Ibrahim Mahmud — Portfolio" },
       {
         property: "og:description",
-        content: "Class 10 student. Future software engineer. Learning. Building. Growing.",
+        content: "Class 10 Student. Exploring Cyber Security. Learning. Building. Growing.",
       },
     ],
     links: [
