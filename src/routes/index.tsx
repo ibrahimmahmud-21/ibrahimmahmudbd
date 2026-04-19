@@ -546,22 +546,37 @@ function Index() {
           <h2 className="section-title">Contact</h2>
           <p className="section-sub">Got a question or want to collaborate? Hit me up.</p>
           <div className="contact-card">
-            <a className="contact-item" href="mailto:ibrahim@example.com">
+            <a className="contact-item" href="mailto:ibmm923@gmail.com">
+              <div className="contact-icon"><Mail size={18} /></div>
               <div className="contact-label">Email</div>
-              <div className="contact-value">ibrahim@example.com</div>
+              <div className="contact-value">ibmm923@gmail.com</div>
               <span className="contact-arrow">↗</span>
             </a>
             <a
               className="contact-item"
-              href="https://facebook.com/ibrahim"
+              href="https://www.facebook.com/share/1B5pb2sDuc/"
               target="_blank"
               rel="noopener noreferrer"
             >
+              <div className="contact-icon"><Facebook size={18} /></div>
               <div className="contact-label">Facebook</div>
               <div className="contact-value">Ibrahim Mahmud</div>
               <span className="contact-arrow">↗</span>
             </a>
+            <a
+              className="contact-item"
+              href="https://t.me/ibrahimbd10"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="contact-icon"><Send size={18} /></div>
+              <div className="contact-label">Telegram</div>
+              <div className="contact-value">@ibrahimbd10</div>
+              <span className="contact-arrow">↗</span>
+            </a>
           </div>
+
+          <ContactForm />
         </section>
       </div>
 
