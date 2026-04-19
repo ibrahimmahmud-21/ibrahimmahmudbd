@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { Mail, Facebook, Send } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -9,12 +10,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Ibrahim Mahmud — Class 10 student and future software engineer. Learning, building, and growing every day.",
+          "Ibrahim Mahmud — Class 10 student exploring Cyber Security. Learning, building, and growing every day.",
       },
       { property: "og:title", content: "Ibrahim Mahmud — Portfolio" },
       {
         property: "og:description",
-        content: "Class 10 student. Future software engineer. Learning. Building. Growing.",
+        content: "Class 10 Student. Exploring Cyber Security. Learning. Building. Growing.",
       },
     ],
     links: [
@@ -293,8 +294,55 @@ const css = `
   }
   .portfolio .contact-item:hover { border-color: rgba(57,255,20,0.42); transform: translateY(-3px); background: rgba(57,255,20,0.04); }
   .portfolio .contact-label { font-size: 10.5px; color: #555; margin-bottom: 6px; letter-spacing: 1.5px; text-transform: uppercase; }
-  .portfolio .contact-value { font-size: 14px; color: var(--text); font-weight: 500; }
+  .portfolio .contact-value { font-size: 14px; color: var(--text); font-weight: 500; word-break: break-all; }
   .portfolio .contact-arrow { font-size: 17px; color: var(--accent); margin-top: 12px; display: block; }
+  .portfolio .contact-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(57,255,20,0.1);
+    border: 1px solid rgba(57,255,20,0.22);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); margin-bottom: 14px;
+  }
+
+  /* CONTACT FORM */
+  .portfolio .contact-form {
+    background: var(--card);
+    border-radius: 20px; padding: 32px;
+    border: 1px solid var(--border);
+    margin-top: 15px;
+    display: grid; gap: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+  .portfolio .form-field { display: grid; gap: 6px; }
+  .portfolio .form-label {
+    font-size: 11px; color: #888; letter-spacing: 1.5px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .portfolio .form-input, .portfolio .form-textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    color: var(--text); font-size: 14px;
+    font-family: inherit; outline: none;
+    transition: border-color .2s, background .2s;
+    width: 100%;
+  }
+  .portfolio .form-textarea { resize: vertical; min-height: 110px; }
+  .portfolio .form-input:focus, .portfolio .form-textarea:focus {
+    border-color: rgba(57,255,20,0.45);
+    background: rgba(57,255,20,0.04);
+  }
+  .portfolio .form-submit {
+    background: var(--accent); color: #111;
+    font-size: 13px; font-weight: 700;
+    padding: 13px 26px; border-radius: 10px;
+    border: none; cursor: pointer;
+    transition: all .22s; font-family: inherit;
+    justify-self: start; margin-top: 4px;
+  }
+  .portfolio .form-submit:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.25); }
+  .portfolio .form-status { font-size: 12.5px; color: var(--accent); margin-top: 4px; }
+  .portfolio .form-error { font-size: 12px; color: #ff6b6b; }
 
   /* FOOTER */
   .portfolio footer {
@@ -311,6 +359,7 @@ const css = `
     .portfolio .about-card { grid-template-columns: 1fr; padding: 28px 24px; }
     .portfolio .projects-grid { grid-template-columns: 1fr; }
     .portfolio .contact-card { padding: 26px 20px; }
+    .portfolio .contact-form { padding: 24px 20px; }
     .portfolio .nav-links { gap: 16px; }
   }
 `;
@@ -350,11 +399,11 @@ function Index() {
           <div className="hero-card">
             <div className="hero-tag">
               <span className="pulse-dot"></span>
-              Future Software Engineer
+              Exploring Cyber Security
             </div>
             <h1 className="hero-name">Ibrahim Mahmud</h1>
             <p className="hero-subtitle">Learning. Building. Growing.</p>
-            <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Future Software Engineer</p>
+            <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Exploring Cyber Security</p>
             <div className="hero-btns">
               <button className="btn-primary" onClick={() => scrollTo("projects")}>
                 View Projects
@@ -437,32 +486,27 @@ function Index() {
             <div className="skill-card">
               <div className="skill-icon">🟧</div>
               <div className="skill-name">HTML</div>
-              <span className="badge badge-done">Comfortable</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">🎨</div>
-              <div className="skill-name">CSS</div>
-              <span className="badge badge-done">Comfortable</span>
-            </div>
-            <div className="skill-card">
-              <div className="skill-icon">⚡</div>
-              <div className="skill-name">JavaScript</div>
-              <span className="badge badge-learning">Learning</span>
+              <span className="badge badge-learning">Basic</span>
             </div>
             <div className="skill-card">
               <div className="skill-icon">📱</div>
-              <div className="skill-name">Responsive Design</div>
-              <span className="badge badge-done">Comfortable</span>
+              <div className="skill-name">Mobile Optimization</div>
+              <span className="badge badge-done">Good</span>
             </div>
             <div className="skill-card">
               <div className="skill-icon">🧩</div>
               <div className="skill-name">Problem Solving</div>
-              <span className="badge badge-done">Developing</span>
+              <span className="badge badge-learning">Developing</span>
             </div>
             <div className="skill-card">
-              <div className="skill-icon">⚙️</div>
-              <div className="skill-name">Mobile Optimization</div>
-              <span className="badge badge-learning">Exploring</span>
+              <div className="skill-icon">🛠️</div>
+              <div className="skill-name">Online Tools &amp; Tech</div>
+              <span className="badge badge-done">Experienced</span>
+            </div>
+            <div className="skill-card">
+              <div className="skill-icon">🛡️</div>
+              <div className="skill-name">Cyber Security</div>
+              <span className="badge badge-learning">Beginner</span>
             </div>
           </div>
         </section>
@@ -502,26 +546,121 @@ function Index() {
           <h2 className="section-title">Contact</h2>
           <p className="section-sub">Got a question or want to collaborate? Hit me up.</p>
           <div className="contact-card">
-            <a className="contact-item" href="mailto:ibrahim@example.com">
+            <a className="contact-item" href="mailto:ibmm923@gmail.com">
+              <div className="contact-icon"><Mail size={18} /></div>
               <div className="contact-label">Email</div>
-              <div className="contact-value">ibrahim@example.com</div>
+              <div className="contact-value">ibmm923@gmail.com</div>
               <span className="contact-arrow">↗</span>
             </a>
             <a
               className="contact-item"
-              href="https://facebook.com/ibrahim"
+              href="https://www.facebook.com/share/1B5pb2sDuc/"
               target="_blank"
               rel="noopener noreferrer"
             >
+              <div className="contact-icon"><Facebook size={18} /></div>
               <div className="contact-label">Facebook</div>
               <div className="contact-value">Ibrahim Mahmud</div>
               <span className="contact-arrow">↗</span>
             </a>
+            <a
+              className="contact-item"
+              href="https://t.me/ibrahimbd10"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="contact-icon"><Send size={18} /></div>
+              <div className="contact-label">Telegram</div>
+              <div className="contact-value">@ibrahimbd10</div>
+              <span className="contact-arrow">↗</span>
+            </a>
           </div>
+
+          <ContactForm />
         </section>
       </div>
 
       <footer>Made with curiosity &amp; code — Ibrahim Mahmud © 2025</footer>
     </div>
+  );
+}
+
+function ContactForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedName || trimmedName.length > 100) {
+      setStatus({ type: "err", msg: "Please enter a valid name (max 100 chars)." });
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail) || trimmedEmail.length > 255) {
+      setStatus({ type: "err", msg: "Please enter a valid email address." });
+      return;
+    }
+    if (!trimmedMessage || trimmedMessage.length > 1000) {
+      setStatus({ type: "err", msg: "Message cannot be empty (max 1000 chars)." });
+      return;
+    }
+
+    const subject = encodeURIComponent(`Portfolio message from ${trimmedName}`);
+    const body = encodeURIComponent(`${trimmedMessage}\n\n— ${trimmedName} (${trimmedEmail})`);
+    window.location.href = `mailto:ibmm923@gmail.com?subject=${subject}&body=${body}`;
+
+    setStatus({ type: "ok", msg: "Opening your email app…" });
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  return (
+    <form className="contact-form" onSubmit={handleSubmit} noValidate>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-name">Name</label>
+        <input
+          id="cf-name"
+          className="form-input"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          maxLength={100}
+          required
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-email">Email</label>
+        <input
+          id="cf-email"
+          className="form-input"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          maxLength={255}
+          required
+        />
+      </div>
+      <div className="form-field">
+        <label className="form-label" htmlFor="cf-message">Message</label>
+        <textarea
+          id="cf-message"
+          className="form-textarea"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          maxLength={1000}
+          required
+        />
+      </div>
+      <button type="submit" className="form-submit">Send Message</button>
+      {status && (
+        <div className={status.type === "ok" ? "form-status" : "form-error"}>{status.msg}</div>
+      )}
+    </form>
   );
 }
