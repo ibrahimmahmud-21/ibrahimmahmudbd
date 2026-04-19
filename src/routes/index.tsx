@@ -293,8 +293,55 @@ const css = `
   }
   .portfolio .contact-item:hover { border-color: rgba(57,255,20,0.42); transform: translateY(-3px); background: rgba(57,255,20,0.04); }
   .portfolio .contact-label { font-size: 10.5px; color: #555; margin-bottom: 6px; letter-spacing: 1.5px; text-transform: uppercase; }
-  .portfolio .contact-value { font-size: 14px; color: var(--text); font-weight: 500; }
+  .portfolio .contact-value { font-size: 14px; color: var(--text); font-weight: 500; word-break: break-all; }
   .portfolio .contact-arrow { font-size: 17px; color: var(--accent); margin-top: 12px; display: block; }
+  .portfolio .contact-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(57,255,20,0.1);
+    border: 1px solid rgba(57,255,20,0.22);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); margin-bottom: 14px;
+  }
+
+  /* CONTACT FORM */
+  .portfolio .contact-form {
+    background: var(--card);
+    border-radius: 20px; padding: 32px;
+    border: 1px solid var(--border);
+    margin-top: 15px;
+    display: grid; gap: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+  .portfolio .form-field { display: grid; gap: 6px; }
+  .portfolio .form-label {
+    font-size: 11px; color: #888; letter-spacing: 1.5px;
+    text-transform: uppercase; font-weight: 600;
+  }
+  .portfolio .form-input, .portfolio .form-textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    color: var(--text); font-size: 14px;
+    font-family: inherit; outline: none;
+    transition: border-color .2s, background .2s;
+    width: 100%;
+  }
+  .portfolio .form-textarea { resize: vertical; min-height: 110px; }
+  .portfolio .form-input:focus, .portfolio .form-textarea:focus {
+    border-color: rgba(57,255,20,0.45);
+    background: rgba(57,255,20,0.04);
+  }
+  .portfolio .form-submit {
+    background: var(--accent); color: #111;
+    font-size: 13px; font-weight: 700;
+    padding: 13px 26px; border-radius: 10px;
+    border: none; cursor: pointer;
+    transition: all .22s; font-family: inherit;
+    justify-self: start; margin-top: 4px;
+  }
+  .portfolio .form-submit:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.25); }
+  .portfolio .form-status { font-size: 12.5px; color: var(--accent); margin-top: 4px; }
+  .portfolio .form-error { font-size: 12px; color: #ff6b6b; }
 
   /* FOOTER */
   .portfolio footer {
@@ -311,6 +358,7 @@ const css = `
     .portfolio .about-card { grid-template-columns: 1fr; padding: 28px 24px; }
     .portfolio .projects-grid { grid-template-columns: 1fr; }
     .portfolio .contact-card { padding: 26px 20px; }
+    .portfolio .contact-form { padding: 24px 20px; }
     .portfolio .nav-links { gap: 16px; }
   }
 `;
