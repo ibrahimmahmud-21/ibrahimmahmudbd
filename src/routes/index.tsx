@@ -1,16 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import {
-  Mail,
-  Facebook,
-  Send,
-  GraduationCap,
-  Shield,
-  Cpu,
-  Zap,
-  Play,
-  Pause,
-} from "lucide-react";
+import { Mail, Facebook, Send, Play, Pause } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
