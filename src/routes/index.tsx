@@ -529,12 +529,7 @@ function Index() {
     }
   };
 
-  const aboutCards = [
-    { icon: <Shield size={20} />, title: "Interested in Cyber Security", side: "left", highlight: true },
-    { icon: <GraduationCap size={20} />, title: "Class 10 Student", side: "right", highlight: false },
-    { icon: <Cpu size={20} />, title: "Passionate about Technology", side: "left", highlight: false },
-    { icon: <Zap size={20} />, title: "Fast Learner", side: "right", highlight: false },
-  ] as const;
+
 
   const skills = [
     { icon: "🟧", name: "HTML", badge: "Basic", badgeClass: "badge-learning", side: "left" },
