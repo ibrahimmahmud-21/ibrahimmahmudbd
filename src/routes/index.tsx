@@ -575,14 +575,8 @@ function Index() {
 
       {/* NAV */}
       <nav>
-        <span className="nav-logo">IM</span>
-        <div className="nav-right">
-          <div className="nav-links">
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
-          </div>
+        <div className="nav-left">
+          <span className="nav-logo">IM</span>
           <button
             type="button"
             className={`audio-btn${playing ? " playing" : ""}`}
@@ -590,8 +584,16 @@ function Index() {
             aria-label={playing ? "Pause Quran recitation" : "Play Quran recitation"}
             title={playing ? "Pause" : "Play Quran"}
           >
-            {playing ? <Pause size={15} /> : <Play size={15} style={{ marginLeft: 1 }} />}
+            {playing ? <Pause size={12} /> : <Play size={12} style={{ marginLeft: 1 }} />}
           </button>
+        </div>
+        <div className="nav-right">
+          <div className="nav-links">
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+          </div>
         </div>
       </nav>
 
