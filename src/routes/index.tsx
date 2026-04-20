@@ -655,16 +655,13 @@ function Index() {
           <div className="section-label">Who I am</div>
           <h2 className="section-title">About Me</h2>
           <p className="section-sub">A few honest things about me.</p>
-          <div className="about-grid">
-            {aboutCards.map((c) => (
-              <div
-                key={c.title}
-                className={`about-card-item reveal reveal-${c.side}${c.highlight ? " highlight" : ""}`}
-              >
-                <div className="about-icon">{c.icon}</div>
-                <div className="about-card-title">{c.title}</div>
-              </div>
-            ))}
+          <div className="about-text reveal reveal-left">
+            <p>
+              I'm Ibrahim Mahmud, a Class 10 student exploring technology and cyber security.
+            </p>
+            <p>
+              I enjoy learning new things, solving problems, and improving my skills every day.
+            </p>
           </div>
         </section>
 
