@@ -78,22 +78,21 @@ const css = `
   }
   .portfolio .nav-links a:hover { color: #111; }
 
-  /* AUDIO BUTTON */
+  /* AUDIO BUTTON — small, sits next to the IM logo */
   .portfolio .audio-btn {
-    width: 34px; height: 34px; border-radius: 999px;
-    background: #111; color: var(--accent);
-    border: 1px solid #111;
+    width: 26px; height: 26px; border-radius: 999px;
+    background: transparent; color: #111;
+    border: 1px solid rgba(0,0,0,0.18);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all .22s;
     flex-shrink: 0;
   }
   .portfolio .audio-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 4px rgba(57,255,20,0.18);
+    border-color: #111;
+    background: #111; color: var(--accent);
   }
   .portfolio .audio-btn.playing {
-    background: var(--accent); color: #111; border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(57,255,20,0.22);
+    background: #111; color: var(--accent); border-color: #111;
   }
 
   /* HERO */
