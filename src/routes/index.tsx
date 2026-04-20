@@ -68,6 +68,7 @@ const css = `
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(0,0,0,0.07);
   }
+  .portfolio .nav-left { display: flex; align-items: center; gap: 10px; }
   .portfolio .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: #111; }
   .portfolio .nav-right { display: flex; align-items: center; gap: 22px; }
   .portfolio .nav-links { display: flex; gap: 30px; }
