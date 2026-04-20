@@ -1,16 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import {
-  Mail,
-  Facebook,
-  Send,
-  GraduationCap,
-  Shield,
-  Cpu,
-  Zap,
-  Play,
-  Pause,
-} from "lucide-react";
+import { Mail, Facebook, Send, Play, Pause } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -68,6 +58,7 @@ const css = `
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(0,0,0,0.07);
   }
+  .portfolio .nav-left { display: flex; align-items: center; gap: 10px; }
   .portfolio .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: #111; }
   .portfolio .nav-right { display: flex; align-items: center; gap: 22px; }
   .portfolio .nav-links { display: flex; gap: 30px; }
@@ -77,22 +68,21 @@ const css = `
   }
   .portfolio .nav-links a:hover { color: #111; }
 
-  /* AUDIO BUTTON */
+  /* AUDIO BUTTON — small, sits next to the IM logo */
   .portfolio .audio-btn {
-    width: 34px; height: 34px; border-radius: 999px;
-    background: #111; color: var(--accent);
-    border: 1px solid #111;
+    width: 26px; height: 26px; border-radius: 999px;
+    background: transparent; color: #111;
+    border: 1px solid rgba(0,0,0,0.18);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all .22s;
     flex-shrink: 0;
   }
   .portfolio .audio-btn:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 4px rgba(57,255,20,0.18);
+    border-color: #111;
+    background: #111; color: var(--accent);
   }
   .portfolio .audio-btn.playing {
-    background: var(--accent); color: #111; border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(57,255,20,0.22);
+    background: #111; color: var(--accent); border-color: #111;
   }
 
   /* HERO */
@@ -234,6 +224,17 @@ const css = `
     letter-spacing: -0.9px; margin-bottom: 8px;
   }
   .portfolio .section-sub { font-size: 13.5px; color: #666; line-height: 1.75; max-width: 460px; }
+
+  /* ABOUT — short, clean text block */
+  .portfolio .about-text {
+    margin-top: 26px;
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #555;
+    font-weight: 400;
+  }
+  .portfolio .about-text p + p { margin-top: 14px; }
 
   /* ABOUT — 2-column card grid w/ one highlighted */
   .portfolio .about-grid {
@@ -528,12 +529,7 @@ function Index() {
     }
   };
 
-  const aboutCards = [
-    { icon: <Shield size={20} />, title: "Interested in Cyber Security", side: "left", highlight: true },
-    { icon: <GraduationCap size={20} />, title: "Class 10 Student", side: "right", highlight: false },
-    { icon: <Cpu size={20} />, title: "Passionate about Technology", side: "left", highlight: false },
-    { icon: <Zap size={20} />, title: "Fast Learner", side: "right", highlight: false },
-  ] as const;
+
 
   const skills = [
     { icon: "🟧", name: "HTML", badge: "Basic", badgeClass: "badge-learning", side: "left" },
@@ -564,14 +560,8 @@ function Index() {
 
       {/* NAV */}
       <nav>
-        <span className="nav-logo">IM</span>
-        <div className="nav-right">
-          <div className="nav-links">
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
-          </div>
+        <div className="nav-left">
+          <span className="nav-logo">IM</span>
           <button
             type="button"
             className={`audio-btn${playing ? " playing" : ""}`}
@@ -579,8 +569,16 @@ function Index() {
             aria-label={playing ? "Pause Quran recitation" : "Play Quran recitation"}
             title={playing ? "Pause" : "Play Quran"}
           >
-            {playing ? <Pause size={15} /> : <Play size={15} style={{ marginLeft: 1 }} />}
+            {playing ? <Pause size={12} /> : <Play size={12} style={{ marginLeft: 1 }} />}
           </button>
+        </div>
+        <div className="nav-right">
+          <div className="nav-links">
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+          </div>
         </div>
       </nav>
 
@@ -642,16 +640,13 @@ function Index() {
           <div className="section-label">Who I am</div>
           <h2 className="section-title">About Me</h2>
           <p className="section-sub">A few honest things about me.</p>
-          <div className="about-grid">
-            {aboutCards.map((c) => (
-              <div
-                key={c.title}
-                className={`about-card-item reveal reveal-${c.side}${c.highlight ? " highlight" : ""}`}
-              >
-                <div className="about-icon">{c.icon}</div>
-                <div className="about-card-title">{c.title}</div>
-              </div>
-            ))}
+          <div className="about-text reveal reveal-left">
+            <p>
+              I'm Ibrahim Mahmud, a Class 10 student exploring technology and cyber security.
+            </p>
+            <p>
+              I enjoy learning new things, solving problems, and improving my skills every day.
+            </p>
           </div>
         </section>
 
