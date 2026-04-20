@@ -235,6 +235,17 @@ const css = `
   }
   .portfolio .section-sub { font-size: 13.5px; color: #666; line-height: 1.75; max-width: 460px; }
 
+  /* ABOUT — short, clean text block */
+  .portfolio .about-text {
+    margin-top: 26px;
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #555;
+    font-weight: 400;
+  }
+  .portfolio .about-text p + p { margin-top: 14px; }
+
   /* ABOUT — 2-column card grid w/ one highlighted */
   .portfolio .about-grid {
     display: grid;
