@@ -1,32 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Mail, Facebook, Send, Play, Pause } from "lucide-react";
-
-export const Route = createFileRoute("/")({
-  component: Index,
-  head: () => ({
-    meta: [
-      { title: "Ibrahim Mahmud — Portfolio" },
-      {
-        name: "description",
-        content:
-          "Ibrahim Mahmud — Class 10 student exploring Cyber Security. Learning, building, and growing every day.",
-      },
-      { property: "og:title", content: "Ibrahim Mahmud — Portfolio" },
-      {
-        property: "og:description",
-        content: "Class 10 Student. Exploring Cyber Security. Learning. Building. Growing.",
-      },
-    ],
-    links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap",
-      },
-    ],
-  }),
-});
 
 const css = `
   .portfolio *, .portfolio *::before, .portfolio *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,7 +22,6 @@ const css = `
     scroll-behavior: smooth;
   }
 
-  /* NAV */
   .portfolio nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     padding: 18px 48px;
@@ -68,7 +40,6 @@ const css = `
   }
   .portfolio .nav-links a:hover { color: #111; }
 
-  /* AUDIO BUTTON — small, sits next to the IM logo */
   .portfolio .audio-btn {
     width: 26px; height: 26px; border-radius: 999px;
     background: transparent; color: #111;
@@ -85,7 +56,6 @@ const css = `
     background: #111; color: var(--accent); border-color: #111;
   }
 
-  /* HERO */
   .portfolio .hero {
     min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
@@ -181,7 +151,6 @@ const css = `
   }
   .portfolio .btn-secondary:hover { border-color: rgba(57,255,20,0.5); color: var(--accent); transform: translateY(-2px); }
 
-  /* SILHOUETTE — gentle, infinite float */
   .portfolio .silhouette-wrap {
     width: 135px; flex-shrink: 0;
     display: flex; justify-content: center; align-items: flex-end;
@@ -193,7 +162,6 @@ const css = `
     50% { transform: translateY(-16px); }
   }
 
-  /* RIGHT HAND WAVE — runs ONCE on load (~1.6s) then stops */
   .portfolio .wave-arm {
     transform-origin: 97px 50px;
     transform: rotate(0deg);
@@ -209,7 +177,6 @@ const css = `
     100% { transform: rotate(0deg); }
   }
 
-  /* SECTIONS */
   .portfolio .content-wrap { max-width: 840px; margin: 0 auto; padding: 0 24px; }
   .portfolio .section { padding: 88px 0 0; }
 
@@ -225,7 +192,6 @@ const css = `
   }
   .portfolio .section-sub { font-size: 13.5px; color: #666; line-height: 1.75; max-width: 460px; }
 
-  /* ABOUT — short, clean text block */
   .portfolio .about-text {
     margin-top: 26px;
     max-width: 560px;
@@ -236,43 +202,6 @@ const css = `
   }
   .portfolio .about-text p + p { margin-top: 14px; }
 
-  /* ABOUT — 2-column card grid w/ one highlighted */
-  .portfolio .about-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px; margin-top: 26px;
-  }
-  .portfolio .about-card-item {
-    background: var(--card);
-    border-radius: 16px; padding: 24px 22px;
-    border: 1px solid var(--border);
-    transition: all .25s;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .portfolio .about-card-item:hover {
-    border-color: rgba(57,255,20,0.38);
-    transform: translateY(-4px);
-    background: var(--card2);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.16);
-  }
-  .portfolio .about-card-item.highlight {
-    border-color: var(--accent);
-    box-shadow: 0 8px 28px rgba(57,255,20,0.18), 0 0 0 1px rgba(57,255,20,0.4) inset;
-  }
-  .portfolio .about-icon {
-    width: 40px; height: 40px; border-radius: 11px;
-    background: rgba(57,255,20,0.1);
-    border: 1px solid rgba(57,255,20,0.22);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent);
-  }
-  .portfolio .about-card-title {
-    font-size: 14px; font-weight: 700; color: var(--text);
-    letter-spacing: -0.2px;
-  }
-
-  /* SKILLS */
   .portfolio .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
@@ -301,7 +230,6 @@ const css = `
   .portfolio .badge-done { background: rgba(57,255,20,0.1); color: var(--accent); border: 1px solid rgba(57,255,20,0.2); }
   .portfolio .badge-learning { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
 
-  /* PROJECTS — single Learning Dashboard card */
   .portfolio .dashboard-card {
     background: var(--card);
     border-radius: 20px; padding: 32px;
@@ -324,7 +252,6 @@ const css = `
     margin-bottom: 22px;
   }
 
-  /* GROWTH CHART */
   .portfolio .chart-wrap {
     background: rgba(57,255,20,0.04);
     border: 1px solid rgba(57,255,20,0.15);
@@ -371,7 +298,6 @@ const css = `
     font-size: 13px; color: var(--text); font-weight: 600;
   }
 
-  /* CONTACT — small icon row */
   .portfolio .contact-icons {
     display: flex; justify-content: center;
     gap: 18px; margin-top: 28px;
@@ -393,7 +319,6 @@ const css = `
   .portfolio .ci-telegram { background: linear-gradient(135deg, #2aabee, #229ed9); }
   .portfolio .ci-telegram:hover { box-shadow: 0 8px 24px rgba(42,171,238,0.45); }
 
-  /* CONTACT FORM */
   .portfolio .contact-form {
     background: var(--card);
     border-radius: 20px; padding: 32px;
@@ -434,7 +359,6 @@ const css = `
   .portfolio .form-status { font-size: 12.5px; color: var(--accent); margin-top: 4px; }
   .portfolio .form-error { font-size: 12px; color: #ff6b6b; }
 
-  /* SCROLL REVEAL */
   .portfolio .reveal {
     opacity: 0;
     transform: translateX(0) translateY(24px);
@@ -456,13 +380,11 @@ const css = `
     .portfolio .growth-fill, .portfolio .growth-dot { opacity: 1; animation: none; }
   }
 
-  /* FOOTER */
   .portfolio footer {
     text-align: center; padding: 32px; font-size: 12px; color: #999;
     border-top: 1px solid rgba(0,0,0,0.07); margin-top: 80px;
   }
 
-  /* RESPONSIVE */
   @media (max-width: 640px) {
     .portfolio nav { padding: 14px 18px; }
     .portfolio .nav-right { gap: 14px; }
@@ -470,14 +392,13 @@ const css = `
     .portfolio .hero-inner { flex-direction: column; }
     .portfolio .silhouette-wrap { width: 90px; margin: 0 0 -14px; order: -1; align-self: center; }
     .portfolio .hero-card { padding: 36px 28px; }
-    .portfolio .about-grid { grid-template-columns: 1fr; }
     .portfolio .dashboard-card { padding: 24px 20px; }
     .portfolio .contact-form { padding: 24px 20px; }
     .portfolio .contact-icons { gap: 14px; }
   }
 `;
 
-function scrollTo(id: string) {
+function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -504,7 +425,7 @@ function useScrollReveal() {
   }, []);
 }
 
-function Index() {
+export default function App() {
   useEffect(() => {
     const prev = document.body.style.background;
     document.body.style.background = "#f5f4f0";
@@ -529,8 +450,6 @@ function Index() {
     }
   };
 
-
-
   const skills = [
     { icon: "🟧", name: "HTML", badge: "Basic", badgeClass: "badge-learning", side: "left" },
     { icon: "📱", name: "Mobile Optimization", badge: "Good", badgeClass: "badge-done", side: "right" },
@@ -539,16 +458,9 @@ function Index() {
     { icon: "🛡️", name: "Cyber Security", badge: "Beginner", badgeClass: "badge-learning", side: "left" },
   ] as const;
 
-  // Growth chart points (rising) — viewBox 0 0 600 180
   const points = [
-    [10, 160],
-    [90, 145],
-    [170, 130],
-    [250, 110],
-    [330, 90],
-    [410, 65],
-    [490, 40],
-    [580, 18],
+    [10, 160], [90, 145], [170, 130], [250, 110],
+    [330, 90], [410, 65], [490, 40], [580, 18],
   ];
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`).join(" ");
   const fillPath = `${linePath} L 580 180 L 10 180 Z`;
@@ -558,7 +470,6 @@ function Index() {
       <style>{css}</style>
       <audio ref={audioRef} src="/quran.mp3" preload="none" onEnded={() => setPlaying(false)} />
 
-      {/* NAV */}
       <nav>
         <div className="nav-left">
           <span className="nav-logo">IM</span>
@@ -582,7 +493,6 @@ function Index() {
         </div>
       </nav>
 
-      {/* HERO */}
       <section className="hero">
         <div className="hero-bg-text">Ibrahim Mahmud</div>
         <div className="hero-inner">
@@ -595,30 +505,17 @@ function Index() {
             <p className="hero-subtitle">Learning. Building. Growing.</p>
             <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Exploring Cyber Security</p>
             <div className="hero-btns">
-              <button className="btn-primary" onClick={() => scrollTo("projects")}>
-                View Projects
-              </button>
-              <button className="btn-secondary" onClick={() => scrollTo("contact")}>
-                Contact
-              </button>
+              <button className="btn-primary" onClick={() => scrollToId("projects")}>View Projects</button>
+              <button className="btn-secondary" onClick={() => scrollToId("contact")}>Contact</button>
             </div>
           </div>
 
-          {/* Human Silhouette — only RIGHT hand waves once */}
           <div className="silhouette-wrap">
-            <svg
-              width="115"
-              height="225"
-              viewBox="0 0 115 225"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="115" height="225" viewBox="0 0 115 225" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="57" cy="22" r="17" fill="#18181b" stroke="#39ff14" strokeWidth="1.5" />
               <rect x="50" y="37" width="14" height="10" rx="4" fill="#18181b" />
               <rect x="30" y="45" width="55" height="65" rx="11" fill="#18181b" />
-              {/* Left arm — fully static */}
               <rect x="7" y="47" width="22" height="55" rx="9" fill="#18181b" />
-              {/* Right arm — waves once on load */}
               <g className="wave-arm">
                 <rect x="86" y="47" width="22" height="55" rx="9" fill="#18181b" />
                 <circle cx="97" cy="105" r="6" fill="#18181b" stroke="#39ff14" strokeWidth="1" />
@@ -635,22 +532,16 @@ function Index() {
       </section>
 
       <div className="content-wrap">
-        {/* ABOUT */}
         <section id="about" className="section">
           <div className="section-label">Who I am</div>
           <h2 className="section-title">About Me</h2>
           <p className="section-sub">A few honest things about me.</p>
           <div className="about-text reveal reveal-left">
-            <p>
-              I'm Ibrahim Mahmud, a Class 10 student exploring technology and cyber security.
-            </p>
-            <p>
-              I enjoy learning new things, solving problems, and improving my skills every day.
-            </p>
+            <p>I'm Ibrahim Mahmud, a Class 10 student exploring technology and cyber security.</p>
+            <p>I enjoy learning new things, solving problems, and improving my skills every day.</p>
           </div>
         </section>
 
-        {/* SKILLS */}
         <section id="skills" className="section">
           <div className="section-label">What I know</div>
           <h2 className="section-title">Skills</h2>
@@ -666,7 +557,6 @@ function Index() {
           </div>
         </section>
 
-        {/* PROJECTS — single Learning Dashboard */}
         <section id="projects" className="section">
           <div className="section-label">What I'm building</div>
           <h2 className="section-title">Projects</h2>
@@ -677,37 +567,20 @@ function Index() {
             <div className="dashboard-tag">Growth has no limit</div>
 
             <div className="chart-wrap">
-              <svg
-                className="growth-svg"
-                viewBox="0 0 600 180"
-                preserveAspectRatio="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-label="Upward growth chart"
-              >
+              <svg className="growth-svg" viewBox="0 0 600 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="Upward growth chart">
                 <defs>
                   <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#39ff14" stopOpacity="0.35" />
                     <stop offset="100%" stopColor="#39ff14" stopOpacity="0" />
                   </linearGradient>
                 </defs>
-                {/* baseline grid */}
                 <line x1="0" y1="45" x2="600" y2="45" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
                 <line x1="0" y1="90" x2="600" y2="90" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
                 <line x1="0" y1="135" x2="600" y2="135" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
-                {/* fill under line */}
                 <path className="growth-fill" d={fillPath} />
-                {/* growth line */}
                 <path className="growth-line" d={linePath} />
-                {/* dots */}
                 {points.map((p, i) => (
-                  <circle
-                    key={i}
-                    className="growth-dot"
-                    cx={p[0]}
-                    cy={p[1]}
-                    r={3.5}
-                    style={{ animationDelay: `${2.4 + i * 0.08}s` }}
-                  />
+                  <circle key={i} className="growth-dot" cx={p[0]} cy={p[1]} r={3.5} style={{ animationDelay: `${2.4 + i * 0.08}s` }} />
                 ))}
               </svg>
             </div>
@@ -729,39 +602,19 @@ function Index() {
           </div>
         </section>
 
-        {/* CONTACT */}
         <section id="contact" className="section" style={{ paddingBottom: 0 }}>
           <div className="section-label">Say Hello</div>
           <h2 className="section-title">Contact</h2>
           <p className="section-sub">Got a question or want to collaborate? Hit me up.</p>
 
           <div className="contact-icons">
-            <a
-              className="contact-icon-btn ci-email"
-              href="mailto:ibmm923@gmail.com"
-              aria-label="Email Ibrahim"
-              title="Email"
-            >
+            <a className="contact-icon-btn ci-email" href="mailto:ibmm923@gmail.com" aria-label="Email Ibrahim" title="Email">
               <Mail size={20} />
             </a>
-            <a
-              className="contact-icon-btn ci-facebook"
-              href="https://www.facebook.com/share/1B5pb2sDuc/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              title="Facebook"
-            >
+            <a className="contact-icon-btn ci-facebook" href="https://www.facebook.com/share/1B5pb2sDuc/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
               <Facebook size={20} />
             </a>
-            <a
-              className="contact-icon-btn ci-telegram"
-              href="https://t.me/ibrahimbd10"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Telegram"
-              title="Telegram"
-            >
+            <a className="contact-icon-btn ci-telegram" href="https://t.me/ibrahimbd10" target="_blank" rel="noopener noreferrer" aria-label="Telegram" title="Telegram">
               <Send size={20} />
             </a>
           </div>
@@ -808,17 +661,11 @@ function ContactForm() {
       const res = await fetch("https://formspree.io/f/xwvwvklr", {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: trimmedName,
-          email: trimmedEmail,
-          message: trimmedMessage,
-        }),
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, message: trimmedMessage }),
       });
       if (res.ok) {
         setStatus({ type: "ok", msg: "Thanks! Your message has been sent." });
-        setName("");
-        setEmail("");
-        setMessage("");
+        setName(""); setEmail(""); setMessage("");
         formRef.current?.reset();
       } else {
         setStatus({ type: "err", msg: "Something went wrong. Please try again." });
@@ -834,41 +681,15 @@ function ContactForm() {
     <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate>
       <div className="form-field">
         <label className="form-label" htmlFor="cf-name">Name</label>
-        <input
-          id="cf-name"
-          name="name"
-          className="form-input"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={100}
-          required
-        />
+        <input id="cf-name" name="name" className="form-input" type="text" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} required />
       </div>
       <div className="form-field">
         <label className="form-label" htmlFor="cf-email">Email</label>
-        <input
-          id="cf-email"
-          name="email"
-          className="form-input"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          maxLength={255}
-          required
-        />
+        <input id="cf-email" name="email" className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={255} required />
       </div>
       <div className="form-field">
         <label className="form-label" htmlFor="cf-message">Message</label>
-        <textarea
-          id="cf-message"
-          name="message"
-          className="form-textarea"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          maxLength={1000}
-          required
-        />
+        <textarea id="cf-message" name="message" className="form-textarea" value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} required />
       </div>
       <button type="submit" className="form-submit" disabled={submitting}>
         {submitting ? "Sending…" : "Send Message"}
