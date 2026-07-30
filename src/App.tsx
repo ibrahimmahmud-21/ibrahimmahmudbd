@@ -1,443 +1,305 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Mail, Facebook, Send, Play, Pause } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-const css = `
-  .portfolio *, .portfolio *::before, .portfolio *::after { margin: 0; padding: 0; box-sizing: border-box; }
+const styles = `
+  .nb {
+    --paper:#eef1ee;
+    --paper-2:#e6e9e2;
+    --ink:#151c2c;
+    --ink-soft:#4a5266;
+    --line:#c7cdc2;
+    --amber:#dc9f2e;
+    --teal:#1f6f68;
+    --coral:#d1502f;
+    --rule:rgba(21,28,44,0.12);
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    min-height:100vh;
+    position:relative;
+  }
+  html{scroll-behavior:smooth;}
+  .nb *{margin:0;padding:0;box-sizing:border-box;}
+  .nb ::selection{background:var(--amber);color:var(--ink);}
 
-  .portfolio {
-    --bg: #f5f4f0;
-    --card: #18181b;
-    --card2: #222228;
-    --accent: #39ff14;
-    --accent2: #2bdb0e;
-    --text: #f5f5f5;
-    --muted: #888;
-    --border: #2c2c33;
-
-    background: var(--bg);
-    font-family: 'Inter', system-ui, sans-serif;
-    color: #111;
-    overflow-x: hidden;
-    min-height: 100vh;
-    scroll-behavior: smooth;
-  }
-
-  .portfolio nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 18px 48px;
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(245, 244, 240, 0.88);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(0,0,0,0.07);
-  }
-  .portfolio .nav-left { display: flex; align-items: center; gap: 10px; }
-  .portfolio .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: #111; }
-  .portfolio .nav-right { display: flex; align-items: center; gap: 22px; }
-  .portfolio .nav-links { display: flex; gap: 30px; }
-  .portfolio .nav-links a {
-    font-size: 13px; color: #666; text-decoration: none;
-    transition: color .2s; font-weight: 500;
-  }
-  .portfolio .nav-links a:hover { color: #111; }
-
-  .portfolio .audio-btn {
-    width: 26px; height: 26px; border-radius: 999px;
-    background: transparent; color: #111;
-    border: 1px solid rgba(0,0,0,0.18);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all .22s;
-    flex-shrink: 0;
-  }
-  .portfolio .audio-btn:hover {
-    border-color: #111;
-    background: #111; color: var(--accent);
-  }
-  .portfolio .audio-btn.playing {
-    background: #111; color: var(--accent); border-color: #111;
+  .nb-texture{
+    position:fixed;inset:0;
+    background-image:repeating-linear-gradient(transparent, transparent 27px, var(--rule) 28px);
+    opacity:.35;
+    pointer-events:none;
+    z-index:0;
   }
 
-  .portfolio .hero {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 110px 24px 70px;
-    position: relative; overflow: hidden;
-  }
-  .portfolio .hero-bg-text {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(56px, 11vw, 118px);
-    font-weight: 900;
-    color: rgba(0,0,0,0.038);
-    white-space: nowrap;
-    letter-spacing: -3px;
-    pointer-events: none; user-select: none; z-index: 0;
-  }
-  .portfolio .hero-inner {
-    position: relative; z-index: 1;
-    display: flex; align-items: stretch; gap: 0;
-    max-width: 840px; width: 100%;
-  }
-  .portfolio .hero-card {
-    background: var(--card);
-    border-radius: 24px;
-    padding: 50px 54px;
-    flex: 1;
-    border: 1px solid var(--border);
-    position: relative; overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1);
-  }
-  .portfolio .hero-card::before {
-    content: '';
-    position: absolute; top: -70px; right: -70px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(57,255,20,0.13), transparent 70%);
-    pointer-events: none;
-  }
-  .portfolio .hero-card::after {
-    content: '';
-    position: absolute; bottom: -40px; left: -40px;
-    width: 160px; height: 160px;
-    background: radial-gradient(circle, rgba(57,255,20,0.06), transparent 70%);
-    pointer-events: none;
-  }
-  .portfolio .hero-tag {
-    display: inline-flex; align-items: center; gap: 7px;
-    background: rgba(57,255,20,0.1);
-    border: 1px solid rgba(57,255,20,0.22);
-    border-radius: 999px; padding: 5px 14px;
-    font-size: 11.5px; color: var(--accent);
-    margin-bottom: 20px; letter-spacing: 0.3px; font-weight: 600;
-  }
-  .portfolio .pulse-dot {
-    width: 6px; height: 6px;
-    background: var(--accent); border-radius: 50%;
-    animation: portfolio-pulse 2s ease-in-out infinite;
-  }
-  @keyframes portfolio-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .nb .wrap{ max-width:1120px; margin:0 auto; padding:0 32px 0 96px; position:relative; }
 
-  .portfolio .hero-name {
-    font-size: clamp(30px, 5vw, 46px);
-    font-weight: 800; color: var(--text);
-    letter-spacing: -1.2px; line-height: 1.12;
-    margin-bottom: 10px;
-  }
-  .portfolio .hero-subtitle {
-    font-size: 17px; color: var(--accent);
-    font-weight: 600; margin-bottom: 9px; letter-spacing: -0.2px;
-  }
-  .portfolio .hero-desc {
-    font-size: 13px; color: var(--muted);
-    margin-bottom: 34px; font-weight: 400;
-  }
-  .portfolio .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .nb .spine{ position:fixed; top:0; bottom:0; left:0; width:64px; z-index:50; pointer-events:none; }
+  .nb .spine-line{ position:absolute; left:56px; top:0; bottom:0; width:1px;
+    background:repeating-linear-gradient(to bottom, var(--ink) 0 6px, transparent 6px 14px); opacity:.25; }
+  .nb .ring{ position:absolute; left:22px; width:26px;height:26px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff, transparent 40%), var(--paper-2);
+    box-shadow: inset 0 0 0 2px var(--ink-soft), inset 0 0 0 6px var(--paper), 2px 2px 0 rgba(0,0,0,.05); }
 
-  .portfolio .btn-primary {
-    background: var(--accent); color: #111;
-    font-size: 13px; font-weight: 700;
-    padding: 12px 26px; border-radius: 10px;
-    border: none; cursor: pointer;
-    transition: all .22s; letter-spacing: -0.1px;
-    font-family: inherit;
-  }
-  .portfolio .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.25); }
-  .portfolio .btn-primary:active { transform: translateY(0); }
+  .nb header{ position:sticky; top:0; z-index:40; background:var(--paper); border-bottom:1px solid var(--rule); }
+  .nb .header-inner{ display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px 20px 96px; max-width:1120px; margin:0 auto; }
+  .nb .brand{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:20px;
+    display:flex; align-items:center; gap:10px; letter-spacing:.02em; }
+  .nb .brand .dot{ width:9px;height:9px;border-radius:50%; background:var(--coral); box-shadow:0 0 0 3px rgba(209,80,47,.18); }
+  .nb .audio-btn{ width:30px;height:30px;border-radius:50%; border:1.5px solid var(--ink);
+    background:transparent; color:var(--ink); cursor:pointer; display:flex; align-items:center;
+    justify-content:center; font-size:11px; transition:.15s; margin-left:4px; padding:0; }
+  .nb .audio-btn:hover{ background:var(--ink); color:var(--paper); }
+  .nb .audio-btn.playing{ background:var(--teal); border-color:var(--teal); color:var(--paper); }
 
-  .portfolio .btn-secondary {
-    background: transparent; color: var(--text);
-    font-size: 13px; font-weight: 500;
-    padding: 12px 26px; border-radius: 10px;
-    border: 1px solid #3a3a44; cursor: pointer;
-    transition: all .22s; font-family: inherit;
-  }
-  .portfolio .btn-secondary:hover { border-color: rgba(57,255,20,0.5); color: var(--accent); transform: translateY(-2px); }
+  .nb nav.tabs{ display:flex; gap:2px; }
+  .nb nav.tabs a{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:.06em;
+    text-transform:uppercase; text-decoration:none; color:var(--ink-soft); padding:9px 16px;
+    border:1px solid transparent; border-bottom:none; border-radius:6px 6px 0 0; position:relative; top:1px; transition:.18s ease; }
+  .nb nav.tabs a:hover{ color:var(--ink); background:var(--paper-2); border-color:var(--rule); }
+  .nb .menu-btn{ display:none; background:none; border:1px solid var(--ink); border-radius:4px; width:38px;height:34px; cursor:pointer; }
+  .nb .menu-btn span{ display:block; width:16px; height:1.5px; background:var(--ink); margin:3.5px auto; }
 
-  .portfolio .silhouette-wrap {
-    width: 135px; flex-shrink: 0;
-    display: flex; justify-content: center; align-items: flex-end;
-    padding-bottom: 14px; margin-left: -22px;
-    animation: portfolio-float 3.6s ease-in-out infinite;
-  }
-  @keyframes portfolio-float {
-    0%,100% { transform: translateY(0px); }
-    50% { transform: translateY(-16px); }
-  }
+  .nb section{ position:relative; z-index:1; }
 
-  .portfolio .wave-arm {
-    transform-origin: 97px 50px;
-    transform: rotate(0deg);
-    animation: portfolio-wave 1.6s ease-in-out 0.4s 1 forwards;
-  }
-  @keyframes portfolio-wave {
-    0%   { transform: rotate(0deg); }
-    15%  { transform: rotate(-90deg); }
-    30%  { transform: rotate(-70deg); }
-    45%  { transform: rotate(-95deg); }
-    60%  { transform: rotate(-70deg); }
-    75%  { transform: rotate(-90deg); }
-    100% { transform: rotate(0deg); }
-  }
+  .nb .entry{ display:flex; align-items:baseline; gap:10px; font-family:'IBM Plex Mono', monospace;
+    font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); margin-bottom:14px; }
+  .nb .entry::before{ content:"§"; color:var(--coral); }
 
-  .portfolio .content-wrap { max-width: 840px; margin: 0 auto; padding: 0 24px; }
-  .portfolio .section { padding: 88px 0 0; }
+  .nb h1,.nb h2,.nb h3{ font-family:'Space Grotesk', sans-serif; }
 
-  .portfolio .section-label {
-    font-size: 10.5px; font-weight: 700;
-    color: var(--accent2); letter-spacing: 2.5px;
-    text-transform: uppercase; margin-bottom: 9px;
-  }
-  .portfolio .section-title {
-    font-size: clamp(22px, 3.8vw, 32px);
-    font-weight: 800; color: #111;
-    letter-spacing: -0.9px; margin-bottom: 8px;
-  }
-  .portfolio .section-sub { font-size: 13.5px; color: #666; line-height: 1.75; max-width: 460px; }
+  .nb .hero{ padding:88px 0 64px; }
+  .nb .stamp{ display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; padding:6px 12px;
+    border:1.5px solid var(--coral); color:var(--coral); border-radius:3px; transform:rotate(-2deg); margin-bottom:28px; }
+  .nb .stamp .pulse{ width:6px;height:6px;border-radius:50%;background:var(--coral); animation:nb-pulse 1.8s infinite; }
+  @keyframes nb-pulse{0%,100%{opacity:1}50%{opacity:.25}}
 
-  .portfolio .about-text {
-    margin-top: 26px;
-    max-width: 560px;
-    font-size: 15px;
-    line-height: 1.85;
-    color: #555;
-    font-weight: 400;
-  }
-  .portfolio .about-text p + p { margin-top: 14px; }
+  .nb .hero h1{ font-size:clamp(44px, 8vw, 88px); font-weight:700; line-height:.98; letter-spacing:-.02em; max-width:820px; }
+  .nb .hero h1 .line{ display:block; }
+  .nb .hero h1 .accent{ color:var(--paper); -webkit-text-stroke:1.5px var(--ink); }
+  .nb .hero .tagline{ font-family:'IBM Plex Mono', monospace; font-size:18px; color:var(--teal);
+    margin-top:22px; border-left:3px solid var(--teal); padding-left:14px; }
+  .nb .hero .meta{ margin-top:14px; color:var(--ink-soft); font-size:14.5px; }
+  .nb .hero-actions{ display:flex; gap:14px; margin-top:38px; flex-wrap:wrap; }
+  .nb .btn{ font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:.04em; text-transform:uppercase;
+    padding:14px 26px; border-radius:3px; text-decoration:none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px; transition:transform .15s ease, box-shadow .15s ease; }
+  .nb .btn-primary{ background:var(--ink); color:var(--paper); border:1px solid var(--ink); }
+  .nb .btn-primary:hover{ transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--amber); }
+  .nb .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--ink); }
+  .nb .btn-ghost:hover{ transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
 
-  .portfolio .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-    gap: 13px; margin-top: 26px;
-  }
-  .portfolio .skill-card {
-    background: var(--card);
-    border-radius: 14px; padding: 22px 19px;
-    border: 1px solid var(--border);
-    transition: transform .25s, border-color .25s, background .25s, box-shadow .25s;
-    cursor: default;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  }
-  .portfolio .skill-card:hover {
-    border-color: rgba(57,255,20,0.38);
-    transform: translateY(-4px);
-    background: var(--card2);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-  }
-  .portfolio .skill-icon { font-size: 22px; margin-bottom: 10px; }
-  .portfolio .skill-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
-  .portfolio .badge {
-    display: inline-block; font-size: 10px;
-    padding: 3px 9px; border-radius: 999px; font-weight: 600;
-  }
-  .portfolio .badge-done { background: rgba(57,255,20,0.1); color: var(--accent); border: 1px solid rgba(57,255,20,0.2); }
-  .portfolio .badge-learning { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .nb .hero-figure{ margin-top:64px; border:1px solid var(--rule); background:var(--paper-2); border-radius:4px;
+    padding:22px 26px; display:flex; gap:28px; flex-wrap:wrap; font-family:'IBM Plex Mono', monospace;
+    font-size:12px; color:var(--ink-soft); }
+  .nb .hero-figure div{ min-width:140px; }
+  .nb .hero-figure b{ display:block; color:var(--ink); font-size:15px; margin-top:4px; font-family:'Space Grotesk',sans-serif; }
 
-  .portfolio .dashboard-card {
-    background: var(--card);
-    border-radius: 20px; padding: 32px;
-    border: 1px solid var(--border);
-    margin-top: 26px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
-    position: relative; overflow: hidden;
-  }
-  .portfolio .dashboard-card::after {
-    content: ''; position: absolute;
-    bottom: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-  }
-  .portfolio .dashboard-title {
-    font-size: 20px; font-weight: 700; color: var(--text);
-    letter-spacing: -0.5px; margin-bottom: 4px;
-  }
-  .portfolio .dashboard-tag {
-    font-size: 12px; color: var(--accent); font-weight: 600;
-    margin-bottom: 22px;
-  }
+  .nb .page{ padding:80px 0; border-top:1px dashed var(--rule); }
+  .nb .page-head{ max-width:640px; margin-bottom:44px; }
+  .nb .page-head h2{ font-size:clamp(30px,4vw,42px); font-weight:700; letter-spacing:-.01em; margin-top:6px;}
+  .nb .page-head p{ color:var(--ink-soft); margin-top:12px; font-size:16px; }
 
-  .portfolio .chart-wrap {
-    background: rgba(57,255,20,0.04);
-    border: 1px solid rgba(57,255,20,0.15);
-    border-radius: 14px; padding: 18px;
-    margin-bottom: 22px;
-  }
-  .portfolio .growth-svg { width: 100%; height: auto; display: block; }
-  .portfolio .growth-line {
-    stroke: var(--accent); stroke-width: 2.5;
-    fill: none;
-    stroke-linecap: round; stroke-linejoin: round;
-    stroke-dasharray: 600;
-    stroke-dashoffset: 600;
-    animation: portfolio-draw 2.4s ease-out 0.4s forwards;
-  }
-  .portfolio .growth-fill {
-    fill: url(#growthGrad);
-    opacity: 0;
-    animation: portfolio-fade 1s ease-out 2.2s forwards;
-  }
-  .portfolio .growth-dot {
-    fill: var(--accent);
-    opacity: 0;
-    animation: portfolio-fade 0.4s ease-out forwards;
-  }
-  @keyframes portfolio-draw { to { stroke-dashoffset: 0; } }
-  @keyframes portfolio-fade { to { opacity: 1; } }
+  .nb .about-grid{ display:grid; grid-template-columns: 1fr 260px; gap:48px; align-items:start; }
+  .nb .about-grid p{ font-size:17px; color:var(--ink-soft); max-width:56ch; line-height:1.85; }
+  .nb .about-grid p + p{ margin-top:16px; }
+  .nb .about-grid strong{ color:var(--ink); font-weight:600;}
+  .nb .sidenote{ border:1px solid var(--rule); border-left:3px solid var(--amber); padding:18px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink-soft);
+    background:var(--paper-2); border-radius:0 4px 4px 0; }
+  .nb .sidenote b{ color:var(--ink); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em; font-size:11px;}
 
-  .portfolio .dashboard-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
-  }
-  .portfolio .info-pill {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-  }
-  .portfolio .info-label {
-    font-size: 10px; color: #888; letter-spacing: 1.4px;
-    text-transform: uppercase; font-weight: 600; margin-bottom: 4px;
-  }
-  .portfolio .info-value {
-    font-size: 13px; color: var(--text); font-weight: 600;
-  }
+  .nb .card-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:16px; }
+  .nb .skill{ border:1px solid var(--rule); background:var(--paper-2); border-radius:4px; padding:20px 18px;
+    position:relative; overflow:hidden; opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  .nb .skill.in-view{ opacity:1; transform:translateY(0); }
+  .nb .skill::after{ content:""; position:absolute; top:0; right:0; width:0; height:0; border-style:solid;
+    border-width:0 22px 22px 0; border-color:transparent var(--paper) transparent transparent; }
+  .nb .skill h4{ font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600; margin-bottom:12px; }
+  .nb .level{ display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; padding:4px 9px; border-radius:20px; }
+  .nb .level::before{ content:""; width:6px;height:6px;border-radius:50%; }
+  .nb .lvl-1{ background:rgba(209,80,47,.12); color:var(--coral); } .nb .lvl-1::before{ background:var(--coral); }
+  .nb .lvl-2{ background:rgba(220,159,46,.15); color:#8a6113; } .nb .lvl-2::before{ background:var(--amber); }
+  .nb .lvl-3{ background:rgba(31,111,104,.13); color:var(--teal); } .nb .lvl-3::before{ background:var(--teal); }
+  .nb .lvl-4{ background:rgba(21,28,44,.09); color:var(--ink); } .nb .lvl-4::before{ background:var(--ink); }
+  .nb .skill-bar{ height:4px; background:var(--rule); border-radius:2px; margin-top:14px; overflow:hidden; }
+  .nb .skill-bar i{ display:block; height:100%; background:var(--ink); border-radius:2px;
+    transform-origin:left; transform:scaleX(0); transition:transform 1s cubic-bezier(.4,0,.2,1); }
+  .nb .skill.in-view .skill-bar i{ transform:scaleX(var(--pct)); }
 
-  .portfolio .contact-icons {
-    display: flex; justify-content: center;
-    gap: 18px; margin-top: 28px;
-  }
-  .portfolio .contact-icon-btn {
-    width: 48px; height: 48px; border-radius: 999px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; text-decoration: none;
-    transition: transform .25s, box-shadow .25s, filter .25s;
-  }
-  .portfolio .contact-icon-btn:hover {
-    transform: scale(1.12) translateY(-2px);
-    filter: brightness(1.1);
-  }
-  .portfolio .ci-email    { background: linear-gradient(135deg, #ea4335, #c5221f); }
-  .portfolio .ci-email:hover    { box-shadow: 0 8px 24px rgba(234,67,53,0.45); }
-  .portfolio .ci-facebook { background: linear-gradient(135deg, #1877f2, #0a4fb3); }
-  .portfolio .ci-facebook:hover { box-shadow: 0 8px 24px rgba(24,119,242,0.45); }
-  .portfolio .ci-telegram { background: linear-gradient(135deg, #2aabee, #229ed9); }
-  .portfolio .ci-telegram:hover { box-shadow: 0 8px 24px rgba(42,171,238,0.45); }
+  .nb .console{ border:1px solid var(--ink); border-radius:6px; background:var(--ink); color:var(--paper); overflow:hidden; }
+  .nb .console-bar{ display:flex; align-items:center; gap:8px; padding:12px 16px;
+    border-bottom:1px solid rgba(238,241,238,.15); font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; color:rgba(238,241,238,.6); }
+  .nb .console-bar .dots{ display:flex; gap:6px; margin-right:8px; }
+  .nb .console-bar .dots span{ width:9px;height:9px;border-radius:50%; }
+  .nb .console-bar .dots span:nth-child(1){ background:var(--coral); }
+  .nb .console-bar .dots span:nth-child(2){ background:var(--amber); }
+  .nb .console-bar .dots span:nth-child(3){ background:var(--teal); }
+  .nb .console-body{ padding:30px; }
+  .nb .console-body h3{ font-size:24px; font-weight:600; }
+  .nb .console-body .status{ color:#8fd6c9; font-family:'IBM Plex Mono',monospace; font-size:12.5px; margin-top:6px; }
+  .nb .chart-wrap{ margin-top:26px; border:1px solid rgba(238,241,238,.14); border-radius:4px; padding:20px; background:rgba(238,241,238,.03); }
+  .nb .chart-wrap svg{ width:100%; height:auto; display:block; }
+  .nb .chart-line{ stroke-dasharray:600; stroke-dashoffset:600; transition:stroke-dashoffset 1.8s ease; }
+  .nb .console.in-view .chart-line{ stroke-dashoffset:0; }
+  .nb .console-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1px;
+    background:rgba(238,241,238,.14); margin-top:22px; border:1px solid rgba(238,241,238,.14); border-radius:4px; overflow:hidden; }
+  .nb .console-stats div{ background:var(--ink); padding:16px 18px; }
+  .nb .console-stats span{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    letter-spacing:.08em; text-transform:uppercase; color:rgba(238,241,238,.5); }
+  .nb .console-stats b{ font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600; margin-top:6px; display:block; color:#8fd6c9; }
 
-  .portfolio .contact-form {
-    background: var(--card);
-    border-radius: 20px; padding: 32px;
-    border: 1px solid var(--border);
-    margin-top: 28px;
-    display: grid; gap: 14px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
-  }
-  .portfolio .form-field { display: grid; gap: 6px; }
-  .portfolio .form-label {
-    font-size: 11px; color: #888; letter-spacing: 1.5px;
-    text-transform: uppercase; font-weight: 600;
-  }
-  .portfolio .form-input, .portfolio .form-textarea {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-    color: var(--text); font-size: 14px;
-    font-family: inherit; outline: none;
-    transition: border-color .2s, background .2s;
-    width: 100%;
-  }
-  .portfolio .form-textarea { resize: vertical; min-height: 110px; }
-  .portfolio .form-input:focus, .portfolio .form-textarea:focus {
-    border-color: rgba(57,255,20,0.45);
-    background: rgba(57,255,20,0.04);
-  }
-  .portfolio .form-submit {
-    background: var(--accent); color: #111;
-    font-size: 13px; font-weight: 700;
-    padding: 13px 26px; border-radius: 10px;
-    border: none; cursor: pointer;
-    transition: all .22s; font-family: inherit;
-    justify-self: start; margin-top: 4px;
-  }
-  .portfolio .form-submit:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(57,255,20,0.25); }
-  .portfolio .form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-  .portfolio .form-status { font-size: 12.5px; color: var(--accent); margin-top: 4px; }
-  .portfolio .form-error { font-size: 12px; color: #ff6b6b; }
+  .nb .postcard{ border:1px solid var(--ink); border-radius:4px; display:grid; grid-template-columns:1fr 1px 1fr; background:var(--paper-2); }
+  .nb .postcard-left{ padding:36px; }
+  .nb .postcard-left h3{ font-size:22px; font-weight:600; }
+  .nb .postcard-left p{ color:var(--ink-soft); margin-top:10px; font-size:14.5px; }
+  .nb .postcard-div{ background:repeating-linear-gradient(to bottom, var(--ink) 0 5px, transparent 5px 11px); opacity:.35; }
+  .nb .social-row{ display:flex; gap:10px; margin-top:26px; }
+  .nb .social-row a{ width:38px;height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid var(--ink); color:var(--ink); text-decoration:none;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; transition:.15s; }
+  .nb .social-row a:hover{ background:var(--ink); color:var(--paper); }
+  .nb .stamp-box{ margin-top:32px; width:74px; height:88px; border:2px dashed var(--ink-soft);
+    display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px; text-align:center; color:var(--ink-soft); transform:rotate(3deg); }
+  .nb .postcard-right{ padding:36px; }
+  .nb .field{ margin-bottom:18px; }
+  .nb .field label{ display:block; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px; }
+  .nb .field input, .nb .field textarea{ width:100%; background:transparent; border:none;
+    border-bottom:1.5px solid var(--line); padding:9px 2px; font-family:'IBM Plex Sans',sans-serif;
+    font-size:15px; color:var(--ink); outline:none; transition:border-color .15s; resize:none; }
+  .nb .field input:focus, .nb .field textarea:focus{ border-color:var(--ink); }
+  .nb .field textarea{ min-height:80px; }
+  .nb .send-btn{ width:100%; background:var(--ink); color:var(--paper); border:none; padding:14px;
+    border-radius:3px; font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:.05em;
+    text-transform:uppercase; cursor:pointer; margin-top:6px; transition:.15s; }
+  .nb .send-btn:hover{ background:var(--coral); }
+  .nb .send-btn:disabled{ opacity:.6; cursor:not-allowed; }
+  .nb .form-note{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; margin-top:12px; color:var(--teal); }
+  .nb .form-note.err{ color:var(--coral); }
 
-  .portfolio .reveal {
-    opacity: 0;
-    transform: translateX(0) translateY(24px);
-    transition: opacity .7s ease-out, transform .7s ease-out;
-    will-change: opacity, transform;
-  }
-  .portfolio .reveal-left  { transform: translateX(-40px); }
-  .portfolio .reveal-right { transform: translateX(40px); }
-  .portfolio .reveal.is-visible {
-    opacity: 1;
-    transform: translateX(0) translateY(0);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .portfolio .reveal, .portfolio .reveal-left, .portfolio .reveal-right {
-      opacity: 1; transform: none; transition: none;
-    }
-    .portfolio .silhouette-wrap, .portfolio .wave-arm { animation: none; }
-    .portfolio .growth-line { stroke-dashoffset: 0; animation: none; }
-    .portfolio .growth-fill, .portfolio .growth-dot { opacity: 1; animation: none; }
-  }
+  .nb footer{ padding:36px 0 48px; text-align:center; font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px; color:var(--ink-soft); border-top:1px dashed var(--rule); }
 
-  .portfolio footer {
-    text-align: center; padding: 32px; font-size: 12px; color: #999;
-    border-top: 1px solid rgba(0,0,0,0.07); margin-top: 80px;
-  }
+  .nb .reveal{ opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease; }
+  .nb .reveal.in-view{ opacity:1; transform:translateY(0); }
 
-  @media (max-width: 640px) {
-    .portfolio nav { padding: 14px 18px; }
-    .portfolio .nav-right { gap: 14px; }
-    .portfolio .nav-links { gap: 14px; }
-    .portfolio .hero-inner { flex-direction: column; }
-    .portfolio .silhouette-wrap { width: 90px; margin: 0 0 -14px; order: -1; align-self: center; }
-    .portfolio .hero-card { padding: 36px 28px; }
-    .portfolio .dashboard-card { padding: 24px 20px; }
-    .portfolio .contact-form { padding: 24px 20px; }
-    .portfolio .contact-icons { gap: 14px; }
+  @media(max-width:860px){
+    .nb .wrap{ padding:0 20px 0 64px; }
+    .nb .header-inner{ padding:18px 20px 18px 64px; }
+    .nb .spine{ width:44px; }
+    .nb .ring{ left:14px; width:20px;height:20px; }
+    .nb .spine-line{ left:38px; }
+    .nb nav.tabs{ display:none; position:absolute; top:64px; left:0; right:0; background:var(--paper);
+      flex-direction:column; border-bottom:1px solid var(--rule); padding:8px 20px 16px; gap:4px; }
+    .nb nav.tabs.open{ display:flex; }
+    .nb nav.tabs a{ border-radius:4px; padding:10px 12px; }
+    .nb .menu-btn{ display:block; }
+    .nb .about-grid{ grid-template-columns:1fr; }
+    .nb .postcard{ grid-template-columns:1fr; }
+    .nb .postcard-div{ display:none; }
   }
 `;
 
-function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+const skills = [
+  { name: "HTML", level: "Basic", cls: "lvl-1", pct: 0.35 },
+  { name: "Mobile Optimization", level: "Good", cls: "lvl-3", pct: 0.6 },
+  { name: "Problem Solving", level: "Developing", cls: "lvl-2", pct: 0.55 },
+  { name: "AI Productivity", level: "Experienced", cls: "lvl-4", pct: 0.85 },
+  { name: "Cyber Security", level: "Beginner", cls: "lvl-1", pct: 0.2 },
+];
+
+function Spine() {
+  const [count, setCount] = useState(20);
+  useEffect(() => {
+    const calc = () =>
+      setCount(Math.ceil(Math.max(document.body.scrollHeight, window.innerHeight) / 64));
+    calc();
+    window.addEventListener("resize", calc);
+    const t = setTimeout(calc, 600);
+    return () => {
+      window.removeEventListener("resize", calc);
+      clearTimeout(t);
+    };
+  }, []);
+  return (
+    <div className="spine">
+      <div className="spine-line" />
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="ring" style={{ top: i * 64 + 20 }} />
+      ))}
+    </div>
+  );
 }
 
-function useScrollReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>(".portfolio .reveal");
-    if (!("IntersectionObserver" in window)) {
-      els.forEach((el) => el.classList.add("is-visible"));
-      return;
+function ContactForm() {
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://formspree.io/f/xwvwvklr", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      if (!res.ok) throw new Error("failed");
+      form.reset();
+      setStatus("sent");
+    } catch {
+      setStatus("error");
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            io.unobserve(entry.target);
-          }
-        }
-      },
-      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
+  };
+
+  return (
+    <form onSubmit={onSubmit}>
+      <div className="field">
+        <label htmlFor="cf-name">Name</label>
+        <input id="cf-name" name="name" type="text" placeholder="Your name" required />
+      </div>
+      <div className="field">
+        <label htmlFor="cf-email">Email</label>
+        <input id="cf-email" name="email" type="email" placeholder="you@example.com" required />
+      </div>
+      <div className="field">
+        <label htmlFor="cf-msg">Message</label>
+        <textarea id="cf-msg" name="message" placeholder="What's on your mind?" required />
+      </div>
+      <button className="send-btn" type="submit" disabled={status === "sending"}>
+        {status === "sending" ? "Sending…" : status === "sent" ? "Sent ✓" : "Send Message"}
+      </button>
+      {status === "sent" && <p className="form-note">Thanks — your message has been sent.</p>}
+      {status === "error" && (
+        <p className="form-note err">Something went wrong. Please email ibmm923@gmail.com.</p>
+      )}
+    </form>
+  );
 }
 
 export default function App() {
-  useEffect(() => {
-    const prev = document.body.style.background;
-    document.body.style.background = "#f5f4f0";
-    return () => {
-      document.body.style.background = prev;
-    };
-  }, []);
-
-  useScrollReveal();
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) e.target.classList.add("in-view");
+        }),
+      { threshold: 0.15 },
+    );
+    document.querySelectorAll(".reveal, .skill, .console").forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
 
   const toggleAudio = () => {
     const el = audioRef.current;
@@ -450,253 +312,184 @@ export default function App() {
     }
   };
 
-  const skills = [
-    { icon: "🟧", name: "HTML", badge: "Basic", badgeClass: "badge-learning", side: "left" },
-    { icon: "📱", name: "Mobile Optimization", badge: "Good", badgeClass: "badge-done", side: "right" },
-    { icon: "🧩", name: "Problem Solving", badge: "Developing", badgeClass: "badge-learning", side: "left" },
-    { icon: "🤖", name: "AI Productivity", badge: "Experienced", badgeClass: "badge-done", side: "right" },
-    { icon: "🛡️", name: "Cyber Security", badge: "Beginner", badgeClass: "badge-learning", side: "left" },
-  ] as const;
-
-  const points = [
-    [10, 160], [90, 145], [170, 130], [250, 110],
-    [330, 90], [410, 65], [490, 40], [580, 18],
-  ];
-  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`).join(" ");
-  const fillPath = `${linePath} L 580 180 L 10 180 Z`;
-
   return (
-    <div className="portfolio">
-      <style>{css}</style>
+    <div className="nb">
+      <style>{styles}</style>
+      <div className="nb-texture" />
+      <Spine />
       <audio ref={audioRef} src="/quran.mp3" preload="none" onEnded={() => setPlaying(false)} />
 
-      <nav>
-        <div className="nav-left">
-          <span className="nav-logo">IM</span>
+      <header>
+        <div className="header-inner">
+          <div className="brand">
+            <span className="dot" />
+            Ibrahim Mahmud
+            <button
+              className={`audio-btn${playing ? " playing" : ""}`}
+              onClick={toggleAudio}
+              aria-label={playing ? "Pause Quran recitation" : "Play Quran recitation"}
+              title={playing ? "Pause" : "Play Quran recitation"}
+            >
+              {playing ? "❚❚" : "▶"}
+            </button>
+          </div>
+          <nav className={`tabs${menuOpen ? " open" : ""}`}>
+            <a href="#about" onClick={() => setMenuOpen(false)}>01 · About</a>
+            <a href="#skills" onClick={() => setMenuOpen(false)}>02 · Skills</a>
+            <a href="#projects" onClick={() => setMenuOpen(false)}>03 · Projects</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)}>04 · Contact</a>
+          </nav>
           <button
-            type="button"
-            className={`audio-btn${playing ? " playing" : ""}`}
-            onClick={toggleAudio}
-            aria-label={playing ? "Pause Quran recitation" : "Play Quran recitation"}
-            title={playing ? "Pause" : "Play Quran"}
+            className="menu-btn"
+            aria-label="Toggle menu"
+            onClick={() => setMenuOpen((v) => !v)}
           >
-            {playing ? <Pause size={12} /> : <Play size={12} style={{ marginLeft: 1 }} />}
+            <span /><span /><span />
           </button>
         </div>
-        <div className="nav-right">
-          <div className="nav-links">
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
-          </div>
-        </div>
-      </nav>
+      </header>
 
-      <section className="hero">
-        <div className="hero-bg-text">Ibrahim Mahmud</div>
-        <div className="hero-inner">
-          <div className="hero-card">
-            <div className="hero-tag">
-              <span className="pulse-dot"></span>
-              Exploring Cyber Security
-            </div>
-            <h1 className="hero-name">Ibrahim Mahmud</h1>
-            <p className="hero-subtitle">Learning. Building. Growing.</p>
-            <p className="hero-desc">Class 10 Student &nbsp;•&nbsp; Exploring Cyber Security</p>
-            <div className="hero-btns">
-              <button className="btn-primary" onClick={() => scrollToId("projects")}>View Projects</button>
-              <button className="btn-secondary" onClick={() => scrollToId("contact")}>Contact</button>
-            </div>
+      <div className="wrap">
+        <section className="hero">
+          <div className="stamp"><span className="pulse" />Status: In Progress</div>
+          <h1>
+            <span className="line">Ibrahim</span>
+            <span className="line accent">Mahmud</span>
+          </h1>
+          <div className="tagline">Learning. Building. Growing.</div>
+          <div className="meta">Class 10 Student — Exploring Cyber Security</div>
+          <div className="hero-actions">
+            <a href="#projects" className="btn btn-primary">View Projects →</a>
+            <a href="#contact" className="btn btn-ghost">Get in Touch</a>
           </div>
-
-          <div className="silhouette-wrap">
-            <svg width="115" height="225" viewBox="0 0 115 225" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="57" cy="22" r="17" fill="#18181b" stroke="#39ff14" strokeWidth="1.5" />
-              <rect x="50" y="37" width="14" height="10" rx="4" fill="#18181b" />
-              <rect x="30" y="45" width="55" height="65" rx="11" fill="#18181b" />
-              <rect x="7" y="47" width="22" height="55" rx="9" fill="#18181b" />
-              <g className="wave-arm">
-                <rect x="86" y="47" width="22" height="55" rx="9" fill="#18181b" />
-                <circle cx="97" cy="105" r="6" fill="#18181b" stroke="#39ff14" strokeWidth="1" />
-              </g>
-              <rect x="31" y="107" width="20" height="72" rx="9" fill="#18181b" />
-              <rect x="64" y="107" width="20" height="72" rx="9" fill="#18181b" />
-              <ellipse cx="41" cy="179" rx="12" ry="6" fill="#18181b" />
-              <ellipse cx="74" cy="179" rx="12" ry="6" fill="#18181b" />
-              <line x1="57" y1="47" x2="57" y2="109" stroke="#39ff14" strokeWidth="0.5" opacity="0.2" />
-              <line x1="30" y1="55" x2="85" y2="55" stroke="#39ff14" strokeWidth="0.4" opacity="0.15" />
-            </svg>
-          </div>
-        </div>
-      </section>
-
-      <div className="content-wrap">
-        <section id="about" className="section">
-          <div className="section-label">Who I am</div>
-          <h2 className="section-title">About Me</h2>
-          <p className="section-sub">A few honest things about me.</p>
-          <div className="about-text reveal reveal-left">
-            <p>I'm Ibrahim Mahmud, a Class 10 student exploring technology and cyber security.</p>
-            <p>I enjoy learning new things, solving problems, and improving my skills every day.</p>
+          <div className="hero-figure">
+            <div>Current focus<b>Cyber Security</b></div>
+            <div>Skills logged<b>5 entries</b></div>
+            <div>Projects<b>1 in progress</b></div>
           </div>
         </section>
 
-        <section id="skills" className="section">
-          <div className="section-label">What I know</div>
-          <h2 className="section-title">Skills</h2>
-          <p className="section-sub">Building my toolkit one skill at a time.</p>
-          <div className="skills-grid">
+        <section className="page reveal" id="about">
+          <div className="entry">Entry 01 — Who I Am</div>
+          <div className="page-head"><h2>About Me</h2></div>
+          <div className="about-grid">
+            <div>
+              <p>
+                I'm <strong>Ibrahim Mahmud</strong>, a Class 10 student exploring technology and
+                cyber security.
+              </p>
+              <p>
+                I enjoy learning new things, solving problems, and improving my skills every day.
+              </p>
+            </div>
+            <div className="sidenote">
+              <b>Field note</b>
+              Every skill on this page started at zero and moves one line at a time.
+            </div>
+          </div>
+        </section>
+
+        <section className="page reveal" id="skills">
+          <div className="entry">Entry 02 — What I Know</div>
+          <div className="page-head">
+            <h2>Skills Log</h2>
+            <p>Rated honestly. Building my toolkit one skill at a time.</p>
+          </div>
+          <div className="card-grid">
             {skills.map((s) => (
-              <div key={s.name} className={`skill-card reveal reveal-${s.side}`}>
-                <div className="skill-icon">{s.icon}</div>
-                <div className="skill-name">{s.name}</div>
-                <span className={`badge ${s.badgeClass}`}>{s.badge}</span>
+              <div
+                key={s.name}
+                className="skill"
+                style={{ "--pct": s.pct } as React.CSSProperties}
+              >
+                <h4>{s.name}</h4>
+                <span className={`level ${s.cls}`}>{s.level}</span>
+                <div className="skill-bar"><i /></div>
               </div>
             ))}
           </div>
         </section>
 
-        <section id="projects" className="section">
-          <div className="section-label">What I'm building</div>
-          <h2 className="section-title">Projects</h2>
-          <p className="section-sub">Tracking my journey, one step at a time.</p>
-
-          <div className="dashboard-card reveal reveal-left">
-            <div className="dashboard-title">Learning Dashboard</div>
-            <div className="dashboard-tag">Growth has no limit</div>
-
-            <div className="chart-wrap">
-              <svg className="growth-svg" viewBox="0 0 600 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-label="Upward growth chart">
-                <defs>
-                  <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#39ff14" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#39ff14" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <line x1="0" y1="45" x2="600" y2="45" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
-                <line x1="0" y1="90" x2="600" y2="90" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
-                <line x1="0" y1="135" x2="600" y2="135" stroke="#2c2c33" strokeWidth="0.5" strokeDasharray="3 5" />
-                <path className="growth-fill" d={fillPath} />
-                <path className="growth-line" d={linePath} />
-                {points.map((p, i) => (
-                  <circle key={i} className="growth-dot" cx={p[0]} cy={p[1]} r={3.5} style={{ animationDelay: `${2.4 + i * 0.08}s` }} />
-                ))}
-              </svg>
+        <section className="page reveal" id="projects">
+          <div className="entry">Entry 03 — What I'm Building</div>
+          <div className="page-head">
+            <h2>Projects</h2>
+            <p>Tracking my journey, one step at a time.</p>
+          </div>
+          <div className="console">
+            <div className="console-bar">
+              <div className="dots"><span /><span /><span /></div>
+              ~/ibrahim/learning-dashboard — running
             </div>
-
-            <div className="dashboard-info">
-              <div className="info-pill">
-                <div className="info-label">Learning Progress</div>
-                <div className="info-value" style={{ color: "var(--accent)" }}>Active</div>
+            <div className="console-body">
+              <h3>Learning Dashboard</h3>
+              <div className="status">✓ growth has no limit</div>
+              <div className="chart-wrap">
+                <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+                  <line x1="0" y1="50" x2="600" y2="50" stroke="rgba(238,241,238,.08)" />
+                  <line x1="0" y1="100" x2="600" y2="100" stroke="rgba(238,241,238,.08)" />
+                  <line x1="0" y1="150" x2="600" y2="150" stroke="rgba(238,241,238,.08)" />
+                  <path
+                    className="chart-line"
+                    d="M10,170 C120,160 180,140 260,110 C340,80 420,55 590,25"
+                    fill="none"
+                    stroke="#8fd6c9"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
-              <div className="info-pill">
-                <div className="info-label">Projects</div>
-                <div className="info-value">Coming Soon</div>
-              </div>
-              <div className="info-pill">
-                <div className="info-label">Focus</div>
-                <div className="info-value">Cyber Security</div>
+              <div className="console-stats">
+                <div><span>Learning Progress</span><b>Active</b></div>
+                <div><span>Projects</span><b>Coming Soon</b></div>
+                <div><span>Focus</span><b>Cyber Security</b></div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="contact" className="section" style={{ paddingBottom: 0 }}>
-          <div className="section-label">Say Hello</div>
-          <h2 className="section-title">Contact</h2>
-          <p className="section-sub">Got a question or want to collaborate? Hit me up.</p>
-
-          <div className="contact-icons">
-            <a className="contact-icon-btn ci-email" href="mailto:ibmm923@gmail.com" aria-label="Email Ibrahim" title="Email">
-              <Mail size={20} />
-            </a>
-            <a className="contact-icon-btn ci-facebook" href="https://www.facebook.com/share/1B5pb2sDuc/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook">
-              <Facebook size={20} />
-            </a>
-            <a className="contact-icon-btn ci-telegram" href="https://t.me/ibrahimbd10" target="_blank" rel="noopener noreferrer" aria-label="Telegram" title="Telegram">
-              <Send size={20} />
-            </a>
+        <section className="page reveal" id="contact">
+          <div className="entry">Entry 04 — Say Hello</div>
+          <div className="page-head">
+            <h2>Contact</h2>
+            <p>Got a question or want to collaborate? Hit me up.</p>
           </div>
-
-          <ContactForm />
+          <div className="postcard">
+            <div className="postcard-left">
+              <h3>Send a note</h3>
+              <p>I read everything that lands here.</p>
+              <div className="social-row">
+                <a href="mailto:ibmm923@gmail.com" aria-label="Email" title="ibmm923@gmail.com">✉</a>
+                <a
+                  href="https://www.facebook.com/share/1B5pb2sDuc/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  title="Facebook"
+                >
+                  f
+                </a>
+                <a
+                  href="https://t.me/ibrahimbd10"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Telegram"
+                  title="Telegram"
+                >
+                  ➤
+                </a>
+              </div>
+              <div className="stamp-box">POSTED FROM<br />BANGLADESH</div>
+            </div>
+            <div className="postcard-div" />
+            <div className="postcard-right">
+              <ContactForm />
+            </div>
+          </div>
         </section>
+
+        <footer>© Ibrahim Mahmud — All rights reserved.</footer>
       </div>
-
-      <footer>© Ibrahim Mahmud — All rights reserved.</footer>
     </div>
-  );
-}
-
-function ContactForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const trimmedName = name.trim();
-    const trimmedEmail = email.trim();
-    const trimmedMessage = message.trim();
-
-    if (!trimmedName || trimmedName.length > 100) {
-      setStatus({ type: "err", msg: "Please enter a valid name (max 100 chars)." });
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail) || trimmedEmail.length > 255) {
-      setStatus({ type: "err", msg: "Please enter a valid email address." });
-      return;
-    }
-    if (!trimmedMessage || trimmedMessage.length > 1000) {
-      setStatus({ type: "err", msg: "Message cannot be empty (max 1000 chars)." });
-      return;
-    }
-
-    setSubmitting(true);
-    setStatus(null);
-    try {
-      const res = await fetch("https://formspree.io/f/xwvwvklr", {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, message: trimmedMessage }),
-      });
-      if (res.ok) {
-        setStatus({ type: "ok", msg: "Thanks! Your message has been sent." });
-        setName(""); setEmail(""); setMessage("");
-        formRef.current?.reset();
-      } else {
-        setStatus({ type: "err", msg: "Something went wrong. Please try again." });
-      }
-    } catch {
-      setStatus({ type: "err", msg: "Network error. Please try again." });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <form ref={formRef} className="contact-form" onSubmit={handleSubmit} noValidate>
-      <div className="form-field">
-        <label className="form-label" htmlFor="cf-name">Name</label>
-        <input id="cf-name" name="name" className="form-input" type="text" value={name} onChange={(e) => setName(e.target.value)} maxLength={100} required />
-      </div>
-      <div className="form-field">
-        <label className="form-label" htmlFor="cf-email">Email</label>
-        <input id="cf-email" name="email" className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={255} required />
-      </div>
-      <div className="form-field">
-        <label className="form-label" htmlFor="cf-message">Message</label>
-        <textarea id="cf-message" name="message" className="form-textarea" value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} required />
-      </div>
-      <button type="submit" className="form-submit" disabled={submitting}>
-        {submitting ? "Sending…" : "Send Message"}
-      </button>
-      {status && (
-        <div className={status.type === "ok" ? "form-status" : "form-error"}>{status.msg}</div>
-      )}
-    </form>
   );
 }
